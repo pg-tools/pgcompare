@@ -1,0 +1,29 @@
+version: "2"
+
+linters:
+  enable:
+    - errorlint
+    - gocritic
+    - misspell
+    - nakedret
+    - nilerr
+    - prealloc
+    - revive
+    - unconvert
+    - unparam
+    - whitespace
+  settings:
+    misspell:
+      locale: US
+  exclusions:
+    presets:
+      - comments
+      - std-error-handling
+
+formatters:
+  enable:
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/ssokov/pgcompare
