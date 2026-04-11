@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>pgcompare Report</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+
+        h1, h2 {
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f0f0f0;
+        }
+
+        .good { color: green; }
+        .bad { color: red; }
+
+        .plan {
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: #111;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>pgcompare Report</h1>
+<p>Generated at: {{ .GeneratedAt }}</p>
+
+{{ if .Description }}
+<div class="section">
+    <h2>Описание оптимизации</h2>
+    <div>{{ .Description }}</div>
+</div>
+{{ end }}
+
+<div class="section">
+    <h2>График p50</h2>
+    <div class="chart-container">
+        <canvas id="p50Chart"></canvas>
+    </div>
+</div>
+
+<div class="section">
+    <h2>График p95</h2>
+    <div class="chart-container">
+        <canvas id="p95Chart"></canvas>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Статистика</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Query</th>
+            <th>p50 before</th>
+            <th>p50 after</th>
+            <th>Δ%</th>
+            <th>p95 before</th>
+            <th>p95 after</th>
+            <th>Δ%</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {{ range $i, $b := .Before.Stats }}
+        {{ $a := index $.After.Stats $i }}
+        <tr>
+            <td>{{ $b.QueryName }}</td>
+
+            <td>{{ $b.P50 }}</td>
+            <td>{{ $a.P50 }}</td>
+            <td class="{{ if lt $a.P50 $b.P50 }}good{{ else }}bad{{ end }}">
+                {{ percent $b.P50 $a.P50 }}
+            </td>
+
+            <td>{{ $b.P95 }}</td>
+            <td>{{ $a.P95 }}</td>
+            <td class="{{ if lt $a.P95 $b.P95 }}good{{ else }}bad{{ end }}">
+                {{ percent $b.P95 $a.P95 }}
+            </td>
+        </tr>
+        {{ end }}
+
+        </tbody>
+    </table>
+</div>
+
+<div class="section">
+    <h2>Дифф планов</h2>
+
+    {{ range .Diffs }}
+    <div style="margin-bottom:20px;">
+        <h3>{{ .QueryName }}</h3>
+
+        {{ range .Summary }}
+        <div>{{ . }}</div>
+        {{ end }}
+
+        <h4>Before</h4>
+        <div class="plan">{{ renderPlan .Before }}</div>
+
+        <h4>After</h4>
+        <div class="plan">{{ renderPlan .After }}</div>
+    </div>
+    {{ end }}
+
+</div>
+
+<script>
+    const labels = [
+        {{- range $i, $b := .Before.Stats }}
+    "{{ $b.QueryName }}",
+        {{- end }}
+    ];
+
+    const p50Before = [
+        {{- range .Before.Stats }}
+    {{ .P50.Milliseconds }},
+    {{- end }}
+    ];
+
+    const p50After = [
+        {{- range .After.Stats }}
+    {{ .P50.Milliseconds }},
+    {{- end }}
+    ];
+
+    const p95Before = [
+        {{- range .Before.Stats }}
+    {{ .P95.Milliseconds }},
+    {{- end }}
+    ];
+
+    const p95After = [
+        {{- range .After.Stats }}
+    {{ .P95.Milliseconds }},
+    {{- end }}
+    ];
+
+    new Chart(document.getElementById('p50Chart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Before', data: p50Before },
+                { label: 'After', data: p50After }
+            ]
+        }
+    });
+
+    new Chart(document.getElementById('p95Chart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Before', data: p95Before },
+                { label: 'After', data: p95After }
+            ]
+        }
+    });
+</script>
+
+</body>
+</html>
