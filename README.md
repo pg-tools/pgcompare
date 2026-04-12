@@ -106,7 +106,7 @@ migration:
   after_version: "5"
 
 setup:
-  command: "$DOCKER_COMPOSE run --rm migrate && $DOCKER_COMPOSE run --rm seed"
+  command: "$DOCKER_COMPOSE up -d postgres && $DOCKER_COMPOSE run --rm -T migrate && $DOCKER_COMPOSE run --rm -T seed"
 
 benchmark:
   before_queries: queries_before.sql
@@ -123,6 +123,12 @@ report:
           ON users (active, created_at DESC);
       expected: Lower p95 latency and higher QPS for the query.
 ```
+
+Notes on the setup command flags:
+
+- `up -d postgres` — starts the PostgreSQL container explicitly before running migrations, ensuring the database is available
+- `-T` — disables TTY allocation. `docker compose run` allocates a TTY by default, which fails when the command is launched from `pgcompare` (non-interactive context). Without `-T`, the setup command will exit with an error
+- `--rm` — removes the container after it exits. Without this flag, each `pgcompare run` leaves behind stopped migrate/seed containers
 
 How migration switching works:
 

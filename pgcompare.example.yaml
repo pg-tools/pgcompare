@@ -1,0 +1,21 @@
+migration:
+  before_version: "3"
+  after_version: "5"
+
+setup:
+  command: "$DOCKER_COMPOSE up -d postgres && $DOCKER_COMPOSE run --rm -T migrate && $DOCKER_COMPOSE run --rm -T seed"
+
+benchmark:
+  before_queries: queries_before.sql
+  after_queries: queries_after.sql
+  iterations: 100
+  concurrency: 4
+
+report:
+  description:
+    - query: find_active_users
+      what: Replace a sequential scan with an index-backed lookup.
+      changes: |
+        CREATE INDEX idx_users_active_created_at
+          ON users (active, created_at DESC);
+      expected: Lower p95 latency and higher QPS for the query.
