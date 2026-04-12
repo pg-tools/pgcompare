@@ -118,20 +118,20 @@
 /* pgcompare report data — injected by Go */
 window.reportData = (function() {
   var beforeStats = [];
-  {{ range .Before.Stats }}beforeStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
+  {{ range .Before.Stats }}beforeStats.push({QueryName:"{{ .QueryName }}",Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
   {{ end }}var afterStats = [];
-  {{ range .After.Stats }}afterStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
+  {{ range .After.Stats }}afterStats.push({QueryName:"{{ .QueryName }}",Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
   {{ end }}var diffs = [];
-  {{ range .Diffs }}diffs.push({QueryName:{{ .QueryName }},Summary:[{{ range .Summary }}{{ . }},{{ end }}],BeforeText:{{ renderPlan .Before }},AfterText:{{ renderPlan .After }}});
+  {{ range .Diffs }}diffs.push({QueryName:"{{ .QueryName }}",Summary:[{{ range .Summary }}"{{ . }}",{{ end }}],BeforeText:"{{ renderPlan .Before }}",AfterText:"{{ renderPlan .After }}"});
   {{ end }}var speedups = [{{ range .Speedups }}{{ . }},{{ end }}];
   return {
-    GeneratedAt: {{ .GeneratedAt.Format "02.01.2006, 15:04:05" }},
+    GeneratedAt: "{{ .GeneratedAt.Format "02.01.2006, 15:04:05" }}",
     Iterations: {{ .Iterations }},
     Concurrency: {{ .Concurrency }},
     Speedups: speedups,
-    Description: {{ .Description }},
-    Before: {Phase: {{ .Before.Phase }}, Stats: beforeStats},
-    After:  {Phase: {{ .After.Phase }},  Stats: afterStats},
+    Description: "{{ .Description }}",
+    Before: {Phase: "{{ .Before.Phase }}", Stats: beforeStats},
+    After:  {Phase: "{{ .After.Phase }}",  Stats: afterStats},
     Diffs:  diffs
   };
 })();
