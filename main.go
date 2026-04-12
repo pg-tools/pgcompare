@@ -162,7 +162,7 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 			Plans: afterPlans,
 		},
 		Diffs:       diffs,
-		Description: cfg.DescriptionHTML,
+		Description: cfg.Report.Description,
 	}
 
 	fmt.Fprintln(os.Stderr, "Generating report...")

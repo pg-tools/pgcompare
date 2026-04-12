@@ -125,57 +125,6 @@ func TestBuildDSN(t *testing.T) {
 	}
 }
 
-func TestBuildDescriptionHTML(t *testing.T) {
-	tests := []struct {
-		name          string
-		entries       []descriptionEntry
-		contains      []string
-		notContains   []string
-		expectExactly string
-	}{
-		{
-			name:          "empty entries",
-			entries:       nil,
-			expectExactly: "",
-		},
-		{
-			name: "all fields",
-			entries: []descriptionEntry{{
-				Query:    "q_users",
-				What:     "users lookup",
-				Changes:  "CREATE INDEX idx_users_name ON users(name);",
-				Expected: "faster scan",
-			}},
-			contains: []string{"opt-query", "opt-field", "q_users", "users lookup", "faster scan"},
-		},
-		{
-			name: "only query",
-			entries: []descriptionEntry{{
-				Query: "q_only",
-			}},
-			contains:    []string{"opt-query", "q_only"},
-			notContains: []string{"opt-field-label"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			html := buildDescriptionHTML(tt.entries)
-			if tt.expectExactly != "" || len(tt.entries) == 0 {
-				assert.Equal(t, tt.expectExactly, html)
-				return
-			}
-
-			for _, part := range tt.contains {
-				assert.Contains(t, html, part)
-			}
-			for _, part := range tt.notContains {
-				assert.NotContains(t, html, part)
-			}
-		})
-	}
-}
-
 func TestLoadConfig(t *testing.T) {
 	t.Setenv("POSTGRES_USER", "u")
 	t.Setenv("POSTGRES_PASSWORD", "p")
@@ -197,7 +146,8 @@ func TestLoadConfig(t *testing.T) {
 		assert.Equal(t, "1", cfg.Migration.BeforeVersion)
 		assert.Equal(t, "2", cfg.Migration.AfterVersion)
 		assert.Equal(t, "postgres://u:p@localhost:9999/d", cfg.DSN)
-		assert.Contains(t, cfg.DescriptionHTML, "opt-query")
+		require.Len(t, cfg.Report.Description, 1)
+		assert.Equal(t, "q1", cfg.Report.Description[0].Query)
 	})
 
 	t.Run("missing env file", func(t *testing.T) {

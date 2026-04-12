@@ -45,5 +45,5 @@ type ReportData struct {
 	Before      *BenchResult
 	After       *BenchResult
 	Diffs       []PlanDiff
-	Description string
+	Description []DescriptionEntry
 }
