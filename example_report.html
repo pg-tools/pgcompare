@@ -115,229 +115,247 @@
 <div class="main" id="app"></div>
 
 <script>
- 
-window.reportData = (function() {
-  var beforeStats = [];
-  beforeStats.push({QueryName:"driver_performance_30d",Min: 1214 ,Max: 13932 ,P50: 1368 ,P95: 2931 ,P99: 12152 ,Mean: 1859 ,StdDev: 1872 ,QPS: 1970.9028905202665 ,ErrorRate: 0 });
-  beforeStats.push({QueryName:"service_class_sla_90d",Min: 272 ,Max: 6825 ,P50: 362 ,P95: 889 ,P99: 6800 ,Mean: 566 ,StdDev: 917 ,QPS: 6023.113819745549 ,ErrorRate: 0 });
-  beforeStats.push({QueryName:"payment_status_anomalies_30d",Min: 254 ,Max: 7972 ,P50: 370 ,P95: 1272 ,P99: 7201 ,Mean: 584 ,StdDev: 1029 ,QPS: 5813.6154874716585 ,ErrorRate: 0 });
-  beforeStats.push({QueryName:"fare_per_km_outliers",Min: 460 ,Max: 8531 ,P50: 526 ,P95: 892 ,P99: 6851 ,Mean: 717 ,StdDev: 1015 ,QPS: 4683.987082875142 ,ErrorRate: 0 });
-  beforeStats.push({QueryName:"passenger_driver_churn_60d",Min: 770 ,Max: 11589 ,P50: 917 ,P95: 1422 ,P99: 11586 ,Mean: 1259 ,StdDev: 1508 ,QPS: 2727.1332468032138 ,ErrorRate: 0 });
-  var afterStats = [];
-  afterStats.push({QueryName:"driver_performance_30d",Min: 1152 ,Max: 8834 ,P50: 1216 ,P95: 1676 ,P99: 8753 ,Mean: 1500 ,StdDev: 1289 ,QPS: 2406.7702640068132 ,ErrorRate: 0 });
-  afterStats.push({QueryName:"service_class_sla_90d",Min: 217 ,Max: 6026 ,P50: 250 ,P95: 433 ,P99: 5974 ,Mean: 390 ,StdDev: 805 ,QPS: 8176.336097125715 ,ErrorRate: 0 });
-  afterStats.push({QueryName:"payment_status_anomalies_30d",Min: 212 ,Max: 6853 ,P50: 255 ,P95: 526 ,P99: 6435 ,Mean: 417 ,StdDev: 898 ,QPS: 7685.631834255967 ,ErrorRate: 0 });
-  afterStats.push({QueryName:"fare_per_km_outliers",Min: 381 ,Max: 6240 ,P50: 417 ,P95: 695 ,P99: 6191 ,Mean: 564 ,StdDev: 815 ,QPS: 6094.0929165128155 ,ErrorRate: 0 });
-  afterStats.push({QueryName:"passenger_driver_churn_60d",Min: 705 ,Max: 8139 ,P50: 765 ,P95: 1335 ,P99: 7423 ,Mean: 958 ,StdDev: 1002 ,QPS: 3764.511013547534 ,ErrorRate: 0 });
-  var diffs = [];
-  diffs.push({QueryName:"driver_performance_30d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)","Sort -\u003e Index Scan on ride_assignments","Explicit Sort removed","Index added: idx_ride_assignments_ride_driver",],BeforeText:"-\u003e Limit (rows=0 time=1.465ms)\n  -\u003e Seq Scan on rides (rows=100 time=11µs)\n  -\u003e Sort (rows=0 time=1.465ms)\n    -\u003e Aggregate (rows=0 time=1.464ms)\n      -\u003e Sort (rows=100 time=1.448ms)\n        -\u003e Nested Loop (rows=100 time=1.432ms)\n          -\u003e Nested Loop (rows=100 time=264µs)\n            -\u003e Nested Loop (rows=100 time=228µs)\n              -\u003e Merge Join (rows=100 time=191µs)\n                -\u003e Subquery Scan (rows=100 time=101µs)\n                  -\u003e WindowAgg (rows=100 time=96µs)\n                    -\u003e Incremental Sort (rows=100 time=78µs)\n                      -\u003e Merge Join (rows=100 time=54µs)\n                        -\u003e Sort (rows=100 time=27µs)\n                          -\u003e CTE Scan (rows=100 time=20µs)\n                        -\u003e Sort (rows=100 time=14µs)\n                          -\u003e Seq Scan on ride_assignments (rows=100 time=4µs)\n                -\u003e Materialize (rows=100 time=77µs)\n                  -\u003e Subquery Scan (rows=100 time=67µs)\n                    -\u003e WindowAgg (rows=100 time=63µs)\n                      -\u003e Incremental Sort (rows=100 time=43µs)\n                        -\u003e Merge Join (rows=100 time=33µs)\n                          -\u003e Sort (rows=100 time=9µs)\n                            -\u003e CTE Scan (rows=100 time=3µs)\n                          -\u003e Sort (rows=100 time=12µs)\n                            -\u003e Seq Scan on ride_status_events (rows=100 time=5µs)\n              -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n            -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n          -\u003e Subquery Scan (rows=50 time=11µs)\n            -\u003e WindowAgg (rows=50 time=9µs)\n              -\u003e Sort (rows=50 time=1µs)\n                -\u003e Hash Join (rows=50 time=21µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                  -\u003e Hash (rows=50 time=9µs)\n                    -\u003e Seq Scan on ride_fare_quotes (rows=50 time=5µs)\n",AfterText:"-\u003e Limit (rows=0 time=1.511ms)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=7µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=2µs)\n  -\u003e Sort (rows=0 time=1.511ms)\n    -\u003e Aggregate (rows=0 time=1.509ms)\n      -\u003e Sort (rows=100 time=1.493ms)\n        -\u003e Nested Loop (rows=100 time=1.478ms)\n          -\u003e Nested Loop (rows=100 time=251µs)\n            -\u003e Nested Loop (rows=100 time=213µs)\n              -\u003e Merge Join (rows=100 time=172µs)\n                -\u003e Subquery Scan (rows=100 time=74µs)\n                  -\u003e WindowAgg (rows=100 time=70µs)\n                    -\u003e Incremental Sort (rows=100 time=51µs)\n                      -\u003e Merge Join (rows=100 time=42µs)\n                        -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=7µs)\n                        -\u003e Sort (rows=100 time=23µs)\n                          -\u003e CTE Scan (rows=100 time=16µs)\n                -\u003e Materialize (rows=100 time=76µs)\n                  -\u003e Subquery Scan (rows=100 time=66µs)\n                    -\u003e WindowAgg (rows=100 time=61µs)\n                      -\u003e Incremental Sort (rows=100 time=42µs)\n                        -\u003e Merge Join (rows=100 time=32µs)\n                          -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_status_created_id (rows=100 time=10µs)\n                          -\u003e Sort (rows=100 time=11µs)\n                            -\u003e CTE Scan (rows=100 time=4µs)\n              -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n            -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n          -\u003e Subquery Scan (rows=50 time=11µs)\n            -\u003e WindowAgg (rows=50 time=9µs)\n              -\u003e Sort (rows=50 time=1µs)\n                -\u003e Hash Join (rows=50 time=22µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                  -\u003e Hash (rows=50 time=10µs)\n                    -\u003e Bitmap Heap Scan on ride_fare_quotes (rows=50 time=5µs)\n                      -\u003e Bitmap Index Scan using idx_ride_fare_quotes_final_ride_created_id (rows=50 time=1µs)\n"});
-  diffs.push({QueryName:"service_class_sla_90d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)",],BeforeText:"-\u003e Sort (rows=3 time=136µs)\n  -\u003e Seq Scan on rides (rows=100 time=10µs)\n  -\u003e Aggregate (rows=3 time=134µs)\n    -\u003e Sort (rows=100 time=110µs)\n      -\u003e Hash Join (rows=100 time=96µs)\n        -\u003e Hash Join (rows=100 time=86µs)\n          -\u003e CTE Scan (rows=100 time=12µs)\n          -\u003e Hash (rows=100 time=63µs)\n            -\u003e Subquery Scan (rows=100 time=57µs)\n              -\u003e Aggregate (rows=100 time=52µs)\n                -\u003e Hash Join (rows=100 time=35µs)\n                  -\u003e Seq Scan on ride_status_events (rows=100 time=4µs)\n                  -\u003e Hash (rows=100 time=23µs)\n                    -\u003e CTE Scan (rows=100 time=17µs)\n        -\u003e Hash (rows=3 time=2µs)\n          -\u003e Seq Scan on service_classes (rows=3 time=2µs)\n",AfterText:"-\u003e Sort (rows=3 time=116µs)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=6µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=2µs)\n  -\u003e Aggregate (rows=3 time=113µs)\n    -\u003e Sort (rows=100 time=95µs)\n      -\u003e Hash Join (rows=100 time=83µs)\n        -\u003e Hash Join (rows=100 time=72µs)\n          -\u003e CTE Scan (rows=100 time=6µs)\n          -\u003e Hash (rows=100 time=57µs)\n            -\u003e Subquery Scan (rows=100 time=51µs)\n              -\u003e Aggregate (rows=100 time=47µs)\n                -\u003e Hash Join (rows=100 time=29µs)\n                  -\u003e Seq Scan on ride_status_events (rows=100 time=4µs)\n                  -\u003e Hash (rows=100 time=16µs)\n                    -\u003e CTE Scan (rows=100 time=11µs)\n        -\u003e Hash (rows=3 time=3µs)\n          -\u003e Seq Scan on service_classes (rows=3 time=2µs)\n"});
-  diffs.push({QueryName:"payment_status_anomalies_30d",Summary:["No significant plan changes detected",],BeforeText:"-\u003e Limit (rows=0 time=169µs)\n  -\u003e Seq Scan on payments (rows=100 time=21µs)\n  -\u003e Sort (rows=0 time=169µs)\n    -\u003e Nested Loop (rows=0 time=168µs)\n      -\u003e Hash Join (rows=0 time=168µs)\n        -\u003e Seq Scan on users (rows=1 time=1µs)\n        -\u003e Hash (rows=0 time=165µs)\n          -\u003e Aggregate (rows=0 time=165µs)\n            -\u003e Hash Join (rows=100 time=146µs)\n              -\u003e Hash Join (rows=100 time=117µs)\n                -\u003e Subquery Scan (rows=100 time=64µs)\n                  -\u003e WindowAgg (rows=100 time=59µs)\n                    -\u003e Sort (rows=100 time=36µs)\n                      -\u003e Hash Join (rows=100 time=27µs)\n                        -\u003e Seq Scan on payment_events (rows=100 time=4µs)\n                        -\u003e Hash (rows=100 time=12µs)\n                          -\u003e CTE Scan (rows=100 time=5µs)\n                -\u003e Hash (rows=100 time=42µs)\n                  -\u003e CTE Scan (rows=100 time=36µs)\n              -\u003e Hash (rows=200 time=18µs)\n                -\u003e Seq Scan on payment_methods (rows=200 time=10µs)\n      -\u003e Materialize (rows=0 time=0s)\n        -\u003e Subquery Scan (rows=0 time=0s)\n          -\u003e WindowAgg (rows=0 time=0s)\n            -\u003e Sort (rows=0 time=0s)\n              -\u003e Seq Scan on user_identities (rows=0 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=146µs)\n  -\u003e Seq Scan on payments (rows=100 time=13µs)\n  -\u003e Sort (rows=0 time=146µs)\n    -\u003e Nested Loop (rows=0 time=145µs)\n      -\u003e Hash Join (rows=0 time=145µs)\n        -\u003e Seq Scan on users (rows=1 time=1µs)\n        -\u003e Hash (rows=0 time=142µs)\n          -\u003e Aggregate (rows=0 time=142µs)\n            -\u003e Hash Join (rows=100 time=126µs)\n              -\u003e Hash Join (rows=100 time=98µs)\n                -\u003e Subquery Scan (rows=100 time=53µs)\n                  -\u003e WindowAgg (rows=100 time=49µs)\n                    -\u003e Sort (rows=100 time=31µs)\n                      -\u003e Hash Join (rows=100 time=23µs)\n                        -\u003e Seq Scan on payment_events (rows=100 time=4µs)\n                        -\u003e Hash (rows=100 time=9µs)\n                          -\u003e CTE Scan (rows=100 time=4µs)\n                -\u003e Hash (rows=100 time=33µs)\n                  -\u003e CTE Scan (rows=100 time=27µs)\n              -\u003e Hash (rows=200 time=20µs)\n                -\u003e Seq Scan on payment_methods (rows=200 time=10µs)\n      -\u003e Materialize (rows=0 time=0s)\n        -\u003e Subquery Scan (rows=0 time=0s)\n          -\u003e WindowAgg (rows=0 time=0s)\n            -\u003e Sort (rows=0 time=0s)\n              -\u003e Seq Scan on user_identities (rows=0 time=0s)\n"});
-  diffs.push({QueryName:"fare_per_km_outliers",Summary:["Seq Scan -\u003e Bitmap Heap Scan on ride_fare_quotes","Added 1 child node(s)",],BeforeText:"-\u003e Limit (rows=0 time=284µs)\n  -\u003e Sort (rows=0 time=284µs)\n    -\u003e Nested Loop (rows=0 time=283µs)\n      -\u003e Subquery Scan (rows=0 time=283µs)\n        -\u003e WindowAgg (rows=0 time=283µs)\n          -\u003e Sort (rows=0 time=283µs)\n            -\u003e Nested Loop (rows=0 time=282µs)\n              -\u003e Merge Join (rows=0 time=282µs)\n                -\u003e Subquery Scan (rows=1 time=8µs)\n                  -\u003e WindowAgg (rows=1 time=8µs)\n                    -\u003e Sort (rows=1 time=7µs)\n                      -\u003e Seq Scan on ride_fare_quotes (rows=50 time=5µs)\n                -\u003e Aggregate (rows=0 time=274µs)\n                  -\u003e Subquery Scan (rows=200 time=234µs)\n                    -\u003e WindowAgg (rows=300 time=223µs)\n                      -\u003e Sort (rows=300 time=95µs)\n                        -\u003e Hash Join (rows=300 time=71µs)\n                          -\u003e Seq Scan on ride_stops (rows=300 time=11µs)\n                          -\u003e Hash (rows=400 time=38µs)\n                            -\u003e Seq Scan on addresses (rows=400 time=18µs)\n              -\u003e Index Scan on rides using rides_pkey (rows=0 time=0s)\n      -\u003e Index Scan on service_classes using service_classes_pkey (rows=0 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=332µs)\n  -\u003e Sort (rows=0 time=332µs)\n    -\u003e Nested Loop (rows=0 time=331µs)\n      -\u003e Subquery Scan (rows=0 time=331µs)\n        -\u003e WindowAgg (rows=0 time=331µs)\n          -\u003e Sort (rows=0 time=331µs)\n            -\u003e Nested Loop (rows=0 time=331µs)\n              -\u003e Merge Join (rows=0 time=331µs)\n                -\u003e Subquery Scan (rows=1 time=9µs)\n                  -\u003e WindowAgg (rows=1 time=9µs)\n                    -\u003e Sort (rows=1 time=8µs)\n                      -\u003e Bitmap Heap Scan on ride_fare_quotes (rows=50 time=5µs)\n                        -\u003e Bitmap Index Scan using idx_ride_fare_quotes_final_ride_created_id (rows=50 time=1µs)\n                -\u003e Aggregate (rows=0 time=321µs)\n                  -\u003e Subquery Scan (rows=200 time=281µs)\n                    -\u003e WindowAgg (rows=300 time=268µs)\n                      -\u003e Sort (rows=300 time=111µs)\n                        -\u003e Hash Join (rows=300 time=85µs)\n                          -\u003e Seq Scan on ride_stops (rows=300 time=12µs)\n                          -\u003e Hash (rows=400 time=48µs)\n                            -\u003e Seq Scan on addresses (rows=400 time=21µs)\n              -\u003e Index Scan on rides using rides_pkey (rows=0 time=0s)\n      -\u003e Index Scan on service_classes using service_classes_pkey (rows=0 time=0s)\n"});
-  diffs.push({QueryName:"passenger_driver_churn_60d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)","Sort -\u003e Index Scan on ride_assignments","Explicit Sort removed","Index added: idx_ride_assignments_ride_driver",],BeforeText:"-\u003e Limit (rows=0 time=983µs)\n  -\u003e Seq Scan on rides (rows=100 time=9µs)\n  -\u003e Sort (rows=0 time=983µs)\n    -\u003e Aggregate (rows=0 time=981µs)\n      -\u003e Sort (rows=100 time=911µs)\n        -\u003e Nested Loop (rows=100 time=898µs)\n          -\u003e Nested Loop (rows=100 time=864µs)\n            -\u003e Nested Loop (rows=100 time=828µs)\n              -\u003e Merge Join (rows=100 time=790µs)\n                -\u003e Nested Loop (rows=100 time=722µs)\n                  -\u003e Merge Join (rows=100 time=177µs)\n                    -\u003e Subquery Scan (rows=100 time=86µs)\n                      -\u003e WindowAgg (rows=100 time=76µs)\n                        -\u003e Incremental Sort (rows=100 time=56µs)\n                          -\u003e Merge Join (rows=100 time=48µs)\n                            -\u003e Sort (rows=100 time=24µs)\n                              -\u003e CTE Scan (rows=100 time=19µs)\n                            -\u003e Sort (rows=100 time=12µs)\n                              -\u003e Seq Scan on ride_assignments (rows=100 time=5µs)\n                    -\u003e Materialize (rows=100 time=78µs)\n                      -\u003e Subquery Scan (rows=100 time=68µs)\n                        -\u003e WindowAgg (rows=100 time=64µs)\n                          -\u003e Incremental Sort (rows=100 time=41µs)\n                            -\u003e Merge Join (rows=100 time=32µs)\n                              -\u003e Sort (rows=100 time=9µs)\n                                -\u003e CTE Scan (rows=100 time=4µs)\n                              -\u003e Sort (rows=100 time=13µs)\n                                -\u003e Seq Scan on ride_status_events (rows=100 time=5µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                -\u003e Aggregate (rows=100 time=57µs)\n                  -\u003e Incremental Sort (rows=100 time=39µs)\n                    -\u003e Merge Join (rows=100 time=30µs)\n                      -\u003e Sort (rows=100 time=9µs)\n                        -\u003e CTE Scan (rows=100 time=3µs)\n                      -\u003e Sort (rows=100 time=11µs)\n                        -\u003e Seq Scan on ride_assignments (rows=100 time=4µs)\n              -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n            -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n          -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=982µs)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=7µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=2µs)\n  -\u003e Sort (rows=0 time=982µs)\n    -\u003e Aggregate (rows=0 time=980µs)\n      -\u003e Sort (rows=100 time=921µs)\n        -\u003e Nested Loop (rows=100 time=907µs)\n          -\u003e Nested Loop (rows=100 time=869µs)\n            -\u003e Nested Loop (rows=100 time=832µs)\n              -\u003e Merge Join (rows=100 time=792µs)\n                -\u003e Nested Loop (rows=100 time=733µs)\n                  -\u003e Merge Join (rows=100 time=184µs)\n                    -\u003e Subquery Scan (rows=100 time=78µs)\n                      -\u003e WindowAgg (rows=100 time=74µs)\n                        -\u003e Incremental Sort (rows=100 time=54µs)\n                          -\u003e Merge Join (rows=100 time=44µs)\n                            -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=7µs)\n                            -\u003e Sort (rows=100 time=24µs)\n                              -\u003e CTE Scan (rows=100 time=17µs)\n                    -\u003e Materialize (rows=100 time=93µs)\n                      -\u003e Subquery Scan (rows=100 time=82µs)\n                        -\u003e WindowAgg (rows=100 time=78µs)\n                          -\u003e Incremental Sort (rows=100 time=55µs)\n                            -\u003e Merge Join (rows=100 time=44µs)\n                              -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_status_created_id (rows=100 time=16µs)\n                              -\u003e Sort (rows=100 time=11µs)\n                                -\u003e CTE Scan (rows=100 time=4µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                -\u003e Aggregate (rows=100 time=49µs)\n                  -\u003e Merge Join (rows=100 time=32µs)\n                    -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=8µs)\n                    -\u003e Sort (rows=100 time=10µs)\n                      -\u003e CTE Scan (rows=100 time=4µs)\n              -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n            -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n          -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n"});
-  var speedups = [ 1.7481735828308735 , 2.0539630211904414 , 2.4165486473659232 , 1.2828905764941247 , 1.0646366197562716 ,];
-  return {
-    GeneratedAt: "12.04.2026, 18:33:51",
-    Iterations:  100 ,
-    Concurrency:  4 ,
-    Speedups: speedups,
-    Description: "\u003cdiv class=\u0022opt-entry\u0022\u003e\u003cdiv class=\u0022opt-query\u0022\u003edriver_performance_30d\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eЧто оптимизировалось\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eДобавлены индексы для выборки последних статусов, назначений и финальной цены поездки\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eИзменения\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003e\u003cpre\u003e\u003ccode\u003eCREATE INDEX idx_ride_status_events_ride_created_id; CREATE INDEX idx_ride_assignments_ride_assigned_id; CREATE INDEX idx_ride_fare_quotes_final_ride_created_id; CREATE INDEX idx_rides_created_at_id;\u003c\/code\u003e\u003c\/pre\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eОжидаемый результат\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eУменьшение full scan и сортировок, переход к index-driven plan, снижение p95 latency\u003c\/div\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-entry\u0022\u003e\u003cdiv class=\u0022opt-query\u0022\u003eservice_class_sla_90d\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eЧто оптимизировалось\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eДобавлены индексы для агрегирования первых статусных событий по поездке и фильтра по периоду\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eИзменения\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003e\u003cpre\u003e\u003ccode\u003eCREATE INDEX idx_ride_status_events_ride_status_created_id; CREATE INDEX idx_rides_created_service_class_id;\u003c\/code\u003e\u003c\/pre\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eОжидаемый результат\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eБыстрее GROUP BY\/FILTER по статусам, снижение latency на больших объемах\u003c\/div\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-entry\u0022\u003e\u003cdiv class=\u0022opt-query\u0022\u003epayment_status_anomalies_30d\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eЧто оптимизировалось\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eОптимизирован поиск последнего статуса платежа и приоритетного контакта пользователя\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eИзменения\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003e\u003cpre\u003e\u003ccode\u003eCREATE INDEX idx_payments_created_method_id; CREATE INDEX idx_payment_events_payment_created_id; CREATE INDEX idx_payment_methods_id_user_id; CREATE INDEX idx_user_identities_user_verified_created_id;\u003c\/code\u003e\u003c\/pre\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eОжидаемый результат\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eSeq Scan -\u0026gt; Index Scan на горячих частях запроса, снижение p95 latency\u003c\/div\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-entry\u0022\u003e\u003cdiv class=\u0022opt-query\u0022\u003efare_per_km_outliers\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eЧто оптимизировалось\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eОптимизированы чтения маршрута по порядку точек и доступ к координатам адресов\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eИзменения\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003e\u003cpre\u003e\u003ccode\u003eCREATE INDEX idx_ride_stops_ride_stop_address; CREATE INDEX idx_addresses_id_include_coords;\u003c\/code\u003e\u003c\/pre\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eОжидаемый результат\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eСнижение стоимости join и window по точкам маршрута, ускорение CTE route_km\u003c\/div\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-entry\u0022\u003e\u003cdiv class=\u0022opt-query\u0022\u003epassenger_driver_churn_60d\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eЧто оптимизировалось\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eДобавлены индексы для агрегации переназначений по ride_id и выборки поездок по периоду\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eИзменения\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003e\u003cpre\u003e\u003ccode\u003eCREATE INDEX idx_rides_created_passenger_id; CREATE INDEX idx_ride_assignments_ride_driver;\u003c\/code\u003e\u003c\/pre\u003e\u003c\/div\u003e\u003c\/div\u003e\u003cdiv class=\u0022opt-field\u0022\u003e\u003cdiv class=\u0022opt-field-label\u0022\u003eОжидаемый результат\u003c\/div\u003e\u003cdiv class=\u0022opt-field-value\u0022\u003eБыстрее count(distinct driver_id) и фильтрация 60-дневного окна, снижение общей latency\u003c\/div\u003e\u003c\/div\u003e\u003c\/div\u003e",
-    Before: {Phase: "before", Stats: beforeStats},
-    After:  {Phase: "after",  Stats: afterStats},
-    Diffs:  diffs
-  };
-})();
 
-var slugify = function(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
-var fmtMs   = function(us) { return (us / 1000).toFixed(1) + '\u00a0ms'; };
-var fmtQPS  = function(q)  { return q.toFixed(1); };
-var fmtErr  = function(e)  { return (e * 100).toFixed(2) + '%'; };
-var esc     = function(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  window.reportData = (function() {
+    var beforeStats = [];
+    beforeStats.push({QueryName:"driver_performance_30d",Min: 1214 ,Max: 10225 ,P50: 1389 ,P95: 2034 ,P99: 10178 ,Mean: 1801 ,StdDev: 1707 ,QPS: 1902.2466998254897 ,ErrorRate: 0 });
+    beforeStats.push({QueryName:"service_class_sla_90d",Min: 294 ,Max: 8118 ,P50: 367 ,P95: 1458 ,P99: 7922 ,Mean: 652 ,StdDev: 1100 ,QPS: 5245.821283681845 ,ErrorRate: 0 });
+    beforeStats.push({QueryName:"payment_status_anomalies_30d",Min: 300 ,Max: 8369 ,P50: 388 ,P95: 1213 ,P99: 7899 ,Mean: 647 ,StdDev: 1105 ,QPS: 5452.475892968334 ,ErrorRate: 0 });
+    beforeStats.push({QueryName:"fare_per_km_outliers",Min: 434 ,Max: 9410 ,P50: 588 ,P95: 1326 ,P99: 9066 ,Mean: 934 ,StdDev: 1387 ,QPS: 3310.6371499969578 ,ErrorRate: 0 });
+    beforeStats.push({QueryName:"passenger_driver_churn_60d",Min: 767 ,Max: 10399 ,P50: 928 ,P95: 1950 ,P99: 9251 ,Mean: 1209 ,StdDev: 1275 ,QPS: 2717.7513325474506 ,ErrorRate: 0 });
+    var afterStats = [];
+    afterStats.push({QueryName:"driver_performance_30d",Min: 1157 ,Max: 9085 ,P50: 1237 ,P95: 1483 ,P99: 9036 ,Mean: 1484 ,StdDev: 1314 ,QPS: 2543.960204728759 ,ErrorRate: 0 });
+    afterStats.push({QueryName:"service_class_sla_90d",Min: 213 ,Max: 6967 ,P50: 261 ,P95: 1073 ,P99: 6707 ,Mean: 453 ,StdDev: 932 ,QPS: 7521.1766249050825 ,ErrorRate: 0 });
+    afterStats.push({QueryName:"payment_status_anomalies_30d",Min: 230 ,Max: 6055 ,P50: 272 ,P95: 529 ,P99: 6039 ,Mean: 421 ,StdDev: 815 ,QPS: 7938.581418368877 ,ErrorRate: 0 });
+    afterStats.push({QueryName:"fare_per_km_outliers",Min: 378 ,Max: 6672 ,P50: 445 ,P95: 998 ,P99: 6644 ,Mean: 609 ,StdDev: 884 ,QPS: 5767.386869101946 ,ErrorRate: 0 });
+    afterStats.push({QueryName:"passenger_driver_churn_60d",Min: 707 ,Max: 8458 ,P50: 765 ,P95: 1576 ,P99: 7875 ,Mean: 977 ,StdDev: 1061 ,QPS: 3569.426123373359 ,ErrorRate: 0 });
+    var diffs = [];
+    diffs.push({QueryName:"driver_performance_30d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)","Sort -\u003e Index Scan on ride_assignments","Explicit Sort removed","Index added: idx_ride_assignments_ride_driver",],BeforeText:"-\u003e Limit (rows=0 time=1.428ms)\n  -\u003e Seq Scan on rides (rows=100 time=10µs)\n  -\u003e Sort (rows=0 time=1.428ms)\n    -\u003e Aggregate (rows=0 time=1.428ms)\n      -\u003e Sort (rows=100 time=1.411ms)\n        -\u003e Nested Loop (rows=100 time=1.394ms)\n          -\u003e Nested Loop (rows=100 time=246µs)\n            -\u003e Nested Loop (rows=100 time=210µs)\n              -\u003e Merge Join (rows=100 time=173µs)\n                -\u003e Subquery Scan (rows=100 time=77µs)\n                  -\u003e WindowAgg (rows=100 time=73µs)\n                    -\u003e Incremental Sort (rows=100 time=56µs)\n                      -\u003e Merge Join (rows=100 time=48µs)\n                        -\u003e Sort (rows=100 time=23µs)\n                          -\u003e CTE Scan (rows=100 time=18µs)\n                        -\u003e Sort (rows=100 time=14µs)\n                          -\u003e Seq Scan on ride_assignments (rows=100 time=5µs)\n                -\u003e Materialize (rows=100 time=84µs)\n                  -\u003e Subquery Scan (rows=100 time=74µs)\n                    -\u003e WindowAgg (rows=100 time=61µs)\n                      -\u003e Incremental Sort (rows=100 time=42µs)\n                        -\u003e Merge Join (rows=100 time=33µs)\n                          -\u003e Sort (rows=100 time=10µs)\n                            -\u003e CTE Scan (rows=100 time=4µs)\n                          -\u003e Sort (rows=100 time=14µs)\n                            -\u003e Seq Scan on ride_status_events (rows=100 time=5µs)\n              -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n            -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n          -\u003e Subquery Scan (rows=50 time=10µs)\n            -\u003e WindowAgg (rows=50 time=8µs)\n              -\u003e Sort (rows=50 time=1µs)\n                -\u003e Hash Join (rows=50 time=21µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                  -\u003e Hash (rows=50 time=10µs)\n                    -\u003e Seq Scan on ride_fare_quotes (rows=50 time=6µs)\n",AfterText:"-\u003e Limit (rows=0 time=1.467ms)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=6µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=2µs)\n  -\u003e Sort (rows=0 time=1.467ms)\n    -\u003e Aggregate (rows=0 time=1.466ms)\n      -\u003e Sort (rows=100 time=1.451ms)\n        -\u003e Nested Loop (rows=100 time=1.437ms)\n          -\u003e Nested Loop (rows=100 time=233µs)\n            -\u003e Nested Loop (rows=100 time=196µs)\n              -\u003e Merge Join (rows=100 time=156µs)\n                -\u003e Subquery Scan (rows=100 time=69µs)\n                  -\u003e WindowAgg (rows=100 time=65µs)\n                    -\u003e Incremental Sort (rows=100 time=46µs)\n                      -\u003e Merge Join (rows=100 time=37µs)\n                        -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=6µs)\n                        -\u003e Sort (rows=100 time=20µs)\n                          -\u003e CTE Scan (rows=100 time=14µs)\n                -\u003e Materialize (rows=100 time=74µs)\n                  -\u003e Subquery Scan (rows=100 time=64µs)\n                    -\u003e WindowAgg (rows=100 time=59µs)\n                      -\u003e Incremental Sort (rows=100 time=40µs)\n                        -\u003e Merge Join (rows=100 time=30µs)\n                          -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_status_created_id (rows=100 time=10µs)\n                          -\u003e Sort (rows=100 time=10µs)\n                            -\u003e CTE Scan (rows=100 time=3µs)\n              -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n            -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n          -\u003e Subquery Scan (rows=50 time=11µs)\n            -\u003e WindowAgg (rows=50 time=9µs)\n              -\u003e Sort (rows=50 time=1µs)\n                -\u003e Hash Join (rows=50 time=20µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                  -\u003e Hash (rows=50 time=9µs)\n                    -\u003e Bitmap Heap Scan on ride_fare_quotes (rows=50 time=5µs)\n                      -\u003e Bitmap Index Scan using idx_ride_fare_quotes_final_ride_created_id (rows=50 time=1µs)\n"});
+    diffs.push({QueryName:"service_class_sla_90d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)",],BeforeText:"-\u003e Sort (rows=3 time=121µs)\n  -\u003e Seq Scan on rides (rows=100 time=10µs)\n  -\u003e Aggregate (rows=3 time=120µs)\n    -\u003e Sort (rows=100 time=101µs)\n      -\u003e Hash Join (rows=100 time=90µs)\n        -\u003e Hash Join (rows=100 time=79µs)\n          -\u003e CTE Scan (rows=100 time=4µs)\n          -\u003e Hash (rows=100 time=64µs)\n            -\u003e Subquery Scan (rows=100 time=58µs)\n              -\u003e Aggregate (rows=100 time=53µs)\n                -\u003e Hash Join (rows=100 time=36µs)\n                  -\u003e Seq Scan on ride_status_events (rows=100 time=3µs)\n                  -\u003e Hash (rows=100 time=23µs)\n                    -\u003e CTE Scan (rows=100 time=17µs)\n        -\u003e Hash (rows=3 time=3µs)\n          -\u003e Seq Scan on service_classes (rows=3 time=2µs)\n",AfterText:"-\u003e Sort (rows=3 time=123µs)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=7µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=2µs)\n  -\u003e Aggregate (rows=3 time=119µs)\n    -\u003e Sort (rows=100 time=99µs)\n      -\u003e Hash Join (rows=100 time=86µs)\n        -\u003e Hash Join (rows=100 time=76µs)\n          -\u003e CTE Scan (rows=100 time=5µs)\n          -\u003e Hash (rows=100 time=61µs)\n            -\u003e Subquery Scan (rows=100 time=55µs)\n              -\u003e Aggregate (rows=100 time=50µs)\n                -\u003e Hash Join (rows=100 time=32µs)\n                  -\u003e Seq Scan on ride_status_events (rows=100 time=3µs)\n                  -\u003e Hash (rows=100 time=18µs)\n                    -\u003e CTE Scan (rows=100 time=13µs)\n        -\u003e Hash (rows=3 time=2µs)\n          -\u003e Seq Scan on service_classes (rows=3 time=1µs)\n"});
+    diffs.push({QueryName:"payment_status_anomalies_30d",Summary:["No significant plan changes detected",],BeforeText:"-\u003e Limit (rows=0 time=138µs)\n  -\u003e Seq Scan on payments (rows=100 time=12µs)\n  -\u003e Sort (rows=0 time=138µs)\n    -\u003e Nested Loop (rows=0 time=136µs)\n      -\u003e Hash Join (rows=0 time=136µs)\n        -\u003e Seq Scan on users (rows=1 time=1µs)\n        -\u003e Hash (rows=0 time=134µs)\n          -\u003e Aggregate (rows=0 time=133µs)\n            -\u003e Hash Join (rows=100 time=113µs)\n              -\u003e Hash Join (rows=100 time=86µs)\n                -\u003e Subquery Scan (rows=100 time=48µs)\n                  -\u003e WindowAgg (rows=100 time=44µs)\n                    -\u003e Sort (rows=100 time=28µs)\n                      -\u003e Hash Join (rows=100 time=21µs)\n                        -\u003e Seq Scan on payment_events (rows=100 time=3µs)\n                        -\u003e Hash (rows=100 time=8µs)\n                          -\u003e CTE Scan (rows=100 time=4µs)\n                -\u003e Hash (rows=100 time=29µs)\n                  -\u003e CTE Scan (rows=100 time=24µs)\n              -\u003e Hash (rows=200 time=19µs)\n                -\u003e Seq Scan on payment_methods (rows=200 time=11µs)\n      -\u003e Materialize (rows=0 time=0s)\n        -\u003e Subquery Scan (rows=0 time=0s)\n          -\u003e WindowAgg (rows=0 time=0s)\n            -\u003e Sort (rows=0 time=0s)\n              -\u003e Seq Scan on user_identities (rows=0 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=142µs)\n  -\u003e Seq Scan on payments (rows=100 time=12µs)\n  -\u003e Sort (rows=0 time=142µs)\n    -\u003e Nested Loop (rows=0 time=141µs)\n      -\u003e Hash Join (rows=0 time=141µs)\n        -\u003e Seq Scan on users (rows=1 time=1µs)\n        -\u003e Hash (rows=0 time=138µs)\n          -\u003e Aggregate (rows=0 time=138µs)\n            -\u003e Hash Join (rows=100 time=121µs)\n              -\u003e Hash Join (rows=100 time=92µs)\n                -\u003e Subquery Scan (rows=100 time=52µs)\n                  -\u003e WindowAgg (rows=100 time=47µs)\n                    -\u003e Sort (rows=100 time=31µs)\n                      -\u003e Hash Join (rows=100 time=23µs)\n                        -\u003e Seq Scan on payment_events (rows=100 time=4µs)\n                        -\u003e Hash (rows=100 time=8µs)\n                          -\u003e CTE Scan (rows=100 time=3µs)\n                -\u003e Hash (rows=100 time=30µs)\n                  -\u003e CTE Scan (rows=100 time=25µs)\n              -\u003e Hash (rows=200 time=20µs)\n                -\u003e Seq Scan on payment_methods (rows=200 time=11µs)\n      -\u003e Materialize (rows=0 time=0s)\n        -\u003e Subquery Scan (rows=0 time=0s)\n          -\u003e WindowAgg (rows=0 time=0s)\n            -\u003e Sort (rows=0 time=0s)\n              -\u003e Seq Scan on user_identities (rows=0 time=0s)\n"});
+    diffs.push({QueryName:"fare_per_km_outliers",Summary:["Seq Scan -\u003e Bitmap Heap Scan on ride_fare_quotes","Added 1 child node(s)",],BeforeText:"-\u003e Limit (rows=0 time=290µs)\n  -\u003e Sort (rows=0 time=290µs)\n    -\u003e Nested Loop (rows=0 time=290µs)\n      -\u003e Subquery Scan (rows=0 time=290µs)\n        -\u003e WindowAgg (rows=0 time=289µs)\n          -\u003e Sort (rows=0 time=289µs)\n            -\u003e Nested Loop (rows=0 time=289µs)\n              -\u003e Merge Join (rows=0 time=289µs)\n                -\u003e Subquery Scan (rows=1 time=9µs)\n                  -\u003e WindowAgg (rows=1 time=8µs)\n                    -\u003e Sort (rows=1 time=8µs)\n                      -\u003e Seq Scan on ride_fare_quotes (rows=50 time=5µs)\n                -\u003e Aggregate (rows=0 time=280µs)\n                  -\u003e Subquery Scan (rows=200 time=241µs)\n                    -\u003e WindowAgg (rows=300 time=231µs)\n                      -\u003e Sort (rows=300 time=100µs)\n                        -\u003e Hash Join (rows=300 time=77µs)\n                          -\u003e Seq Scan on ride_stops (rows=300 time=11µs)\n                          -\u003e Hash (rows=400 time=42µs)\n                            -\u003e Seq Scan on addresses (rows=400 time=20µs)\n              -\u003e Index Scan on rides using rides_pkey (rows=0 time=0s)\n      -\u003e Index Scan on service_classes using service_classes_pkey (rows=0 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=356µs)\n  -\u003e Sort (rows=0 time=356µs)\n    -\u003e Nested Loop (rows=0 time=355µs)\n      -\u003e Subquery Scan (rows=0 time=355µs)\n        -\u003e WindowAgg (rows=0 time=355µs)\n          -\u003e Sort (rows=0 time=355µs)\n            -\u003e Nested Loop (rows=0 time=354µs)\n              -\u003e Merge Join (rows=0 time=353µs)\n                -\u003e Subquery Scan (rows=1 time=10µs)\n                  -\u003e WindowAgg (rows=1 time=10µs)\n                    -\u003e Sort (rows=1 time=9µs)\n                      -\u003e Bitmap Heap Scan on ride_fare_quotes (rows=50 time=4µs)\n                        -\u003e Bitmap Index Scan using idx_ride_fare_quotes_final_ride_created_id (rows=50 time=1µs)\n                -\u003e Aggregate (rows=0 time=343µs)\n                  -\u003e Subquery Scan (rows=200 time=280µs)\n                    -\u003e WindowAgg (rows=300 time=268µs)\n                      -\u003e Sort (rows=300 time=111µs)\n                        -\u003e Hash Join (rows=300 time=79µs)\n                          -\u003e Seq Scan on ride_stops (rows=300 time=11µs)\n                          -\u003e Hash (rows=400 time=42µs)\n                            -\u003e Seq Scan on addresses (rows=400 time=20µs)\n              -\u003e Index Scan on rides using rides_pkey (rows=0 time=0s)\n      -\u003e Index Scan on service_classes using service_classes_pkey (rows=0 time=0s)\n"});
+    diffs.push({QueryName:"passenger_driver_churn_60d",Summary:["Seq Scan -\u003e Bitmap Heap Scan on rides","Added 1 child node(s)","Sort -\u003e Index Scan on ride_assignments","Explicit Sort removed","Index added: idx_ride_assignments_ride_driver",],BeforeText:"-\u003e Limit (rows=0 time=935µs)\n  -\u003e Seq Scan on rides (rows=100 time=10µs)\n  -\u003e Sort (rows=0 time=935µs)\n    -\u003e Aggregate (rows=0 time=934µs)\n      -\u003e Sort (rows=100 time=880µs)\n        -\u003e Nested Loop (rows=100 time=867µs)\n          -\u003e Nested Loop (rows=100 time=832µs)\n            -\u003e Nested Loop (rows=100 time=797µs)\n              -\u003e Merge Join (rows=100 time=759µs)\n                -\u003e Nested Loop (rows=100 time=680µs)\n                  -\u003e Merge Join (rows=100 time=168µs)\n                    -\u003e Subquery Scan (rows=100 time=79µs)\n                      -\u003e WindowAgg (rows=100 time=75µs)\n                        -\u003e Incremental Sort (rows=100 time=56µs)\n                          -\u003e Merge Join (rows=100 time=48µs)\n                            -\u003e Sort (rows=100 time=25µs)\n                              -\u003e CTE Scan (rows=100 time=19µs)\n                            -\u003e Sort (rows=100 time=13µs)\n                              -\u003e Seq Scan on ride_assignments (rows=100 time=5µs)\n                    -\u003e Materialize (rows=100 time=77µs)\n                      -\u003e Subquery Scan (rows=100 time=67µs)\n                        -\u003e WindowAgg (rows=100 time=63µs)\n                          -\u003e Incremental Sort (rows=100 time=41µs)\n                            -\u003e Merge Join (rows=100 time=32µs)\n                              -\u003e Sort (rows=100 time=9µs)\n                                -\u003e CTE Scan (rows=100 time=4µs)\n                              -\u003e Sort (rows=100 time=12µs)\n                                -\u003e Seq Scan on ride_status_events (rows=100 time=5µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                -\u003e Aggregate (rows=100 time=69µs)\n                  -\u003e Incremental Sort (rows=100 time=52µs)\n                    -\u003e Merge Join (rows=100 time=44µs)\n                      -\u003e Sort (rows=100 time=9µs)\n                        -\u003e CTE Scan (rows=100 time=3µs)\n                      -\u003e Sort (rows=100 time=25µs)\n                        -\u003e Seq Scan on ride_assignments (rows=100 time=4µs)\n              -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n            -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n          -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n",AfterText:"-\u003e Limit (rows=0 time=992µs)\n  -\u003e Bitmap Heap Scan on rides (rows=100 time=9µs)\n    -\u003e Bitmap Index Scan using idx_rides_created_passenger_id (rows=100 time=3µs)\n  -\u003e Sort (rows=0 time=992µs)\n    -\u003e Aggregate (rows=0 time=989µs)\n      -\u003e Sort (rows=100 time=922µs)\n        -\u003e Nested Loop (rows=100 time=907µs)\n          -\u003e Nested Loop (rows=100 time=869µs)\n            -\u003e Nested Loop (rows=100 time=831µs)\n              -\u003e Merge Join (rows=100 time=789µs)\n                -\u003e Nested Loop (rows=100 time=730µs)\n                  -\u003e Merge Join (rows=100 time=181µs)\n                    -\u003e Subquery Scan (rows=100 time=88µs)\n                      -\u003e WindowAgg (rows=100 time=83µs)\n                        -\u003e Incremental Sort (rows=100 time=62µs)\n                          -\u003e Merge Join (rows=100 time=52µs)\n                            -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=10µs)\n                            -\u003e Sort (rows=100 time=29µs)\n                              -\u003e CTE Scan (rows=100 time=20µs)\n                    -\u003e Materialize (rows=100 time=80µs)\n                      -\u003e Subquery Scan (rows=100 time=69µs)\n                        -\u003e WindowAgg (rows=100 time=63µs)\n                          -\u003e Incremental Sort (rows=100 time=41µs)\n                            -\u003e Merge Join (rows=100 time=31µs)\n                              -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_status_created_id (rows=100 time=10µs)\n                              -\u003e Sort (rows=100 time=10µs)\n                                -\u003e CTE Scan (rows=100 time=4µs)\n                  -\u003e CTE Scan (rows=100 time=3µs)\n                -\u003e Aggregate (rows=100 time=48µs)\n                  -\u003e Merge Join (rows=100 time=31µs)\n                    -\u003e Index Scan on ride_assignments using idx_ride_assignments_ride_driver (rows=100 time=7µs)\n                    -\u003e Sort (rows=100 time=10µs)\n                      -\u003e CTE Scan (rows=100 time=4µs)\n              -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n            -\u003e Index Scan on drivers using drivers_pkey (rows=1 time=0s)\n          -\u003e Index Scan on users using users_pkey (rows=1 time=0s)\n"});
+    var speedups = [ 1.3712257520856155 , 1.3587943051570257 , 2.291400519235308 , 1.3284225331794577 , 1.236920460188238 ,];
+    var description = [];
+    description.push({Query:"driver_performance_30d",What:"Добавлены индексы для выборки последних статусов, назначений и финальной цены поездки",Changes:"\"CREATE INDEX idx_ride_status_events_ride_created_id; CREATE INDEX idx_ride_assignments_ride_assigned_id; CREATE INDEX idx_ride_fare_quotes_final_ride_created_id; CREATE INDEX idx_rides_created_at_id;\"",Expected:"Уменьшение full scan и сортировок, переход к index-driven plan, снижение p95 latency"});
+    description.push({Query:"service_class_sla_90d",What:"Добавлены индексы для агрегирования первых статусных событий по поездке и фильтра по периоду",Changes:"\"CREATE INDEX idx_ride_status_events_ride_status_created_id; CREATE INDEX idx_rides_created_service_class_id;\"",Expected:"Быстрее GROUP BY\/FILTER по статусам, снижение latency на больших объемах"});
+    description.push({Query:"payment_status_anomalies_30d",What:"Оптимизирован поиск последнего статуса платежа и приоритетного контакта пользователя",Changes:"\"CREATE INDEX idx_payments_created_method_id; CREATE INDEX idx_payment_events_payment_created_id; CREATE INDEX idx_payment_methods_id_user_id; CREATE INDEX idx_user_identities_user_verified_created_id;\"",Expected:"Seq Scan -\u003e Index Scan на горячих частях запроса, снижение p95 latency"});
+    description.push({Query:"fare_per_km_outliers",What:"Оптимизированы чтения маршрута по порядку точек и доступ к координатам адресов",Changes:"\"CREATE INDEX idx_ride_stops_ride_stop_address; CREATE INDEX idx_addresses_id_include_coords;\"",Expected:"Снижение стоимости join и window по точкам маршрута, ускорение CTE route_km"});
+    description.push({Query:"passenger_driver_churn_60d",What:"Добавлены индексы для агрегации переназначений по ride_id и выборки поездок по периоду",Changes:"\"CREATE INDEX idx_rides_created_passenger_id; CREATE INDEX idx_ride_assignments_ride_driver;\"",Expected:"Быстрее count(distinct driver_id) и фильтрация 60-дневного окна, снижение общей latency"});
+    return {
+      GeneratedAt: "12.04.2026, 21:34:52",
+      Iterations:  100 ,
+      Concurrency:  4 ,
+      Speedups: speedups,
+      Description: description,
+      Before: {Phase: "before", Stats: beforeStats},
+      After:  {Phase: "after",  Stats: afterStats},
+      Diffs:  diffs
+    };
+  })();
 
-function calcDelta(before, after, higherIsBetter) {
-  if (before === 0) return { text: '\u2014', cls: 'badge-neutral' };
-  var pct = (after - before) / before * 100;
-  if (Math.abs(pct) < 0.5) return { text: '0.0%', cls: 'badge-neutral' };
-  var good = higherIsBetter ? pct > 0 : pct < 0;
-  return { text: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%', cls: good ? 'badge-good' : 'badge-bad' };
-}
+  var slugify = function(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
+  var fmtMs   = function(us) { return (us / 1000).toFixed(1) + '\u00a0ms'; };
+  var fmtQPS  = function(q)  { return q.toFixed(1); };
+  var fmtErr  = function(e)  { return (e * 100).toFixed(2) + '%'; };
+  var esc     = function(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
 
-function fmtSpeedup(f) {
-  if (!f || f < 1.05) return { text: '1.0\u00d7', cls: 'badge-neutral' };
-  return { text: f.toFixed(1) + '\u00d7', cls: 'badge-speedup' };
-}
-
-function badge(d) { return '<span class="badge ' + d.cls + '">' + esc(d.text) + '</span>'; }
-
-function buildNavLinks(data) {
-  var links = [
-    { href: '#description', label: '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435' },
-    { href: '#summary',     label: '\u0421\u0432\u043e\u0434\u043a\u0430' }
-  ].concat(data.Before.Stats.map(function(s) {
-    return { href: '#query-' + slugify(s.QueryName), label: s.QueryName, cls: 'is-query' };
-  }));
-  return links.map(function(l) {
-    return '<a href="' + l.href + '" class="nav-link ' + (l.cls || '') + '" data-href="' + l.href + '">' + esc(l.label) + '</a>';
-  }).join('');
-}
-
-function buildHeader(data) {
-  var params = '';
-  if (data.Iterations) {
-    params = '<div class="bench-params">'
-      + '<span class="bench-param">iterations: ' + data.Iterations + '</span>'
-      + '<span class="bench-param">concurrency: ' + data.Concurrency + '</span>'
-      + '</div>';
+  function calcDelta(before, after, higherIsBetter) {
+    if (before === 0) return { text: '\u2014', cls: 'badge-neutral' };
+    var pct = (after - before) / before * 100;
+    if (Math.abs(pct) < 0.5) return { text: '0.0%', cls: 'badge-neutral' };
+    var good = higherIsBetter ? pct > 0 : pct < 0;
+    return { text: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%', cls: good ? 'badge-good' : 'badge-bad' };
   }
-  return '<div class="header">'
-    + '<h1>\u041e\u0442\u0447\u0451\u0442 \u043f\u043e \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438 PostgreSQL</h1>'
-    + '<div class="header-meta">Generated at ' + esc(data.GeneratedAt) + '</div>'
-    + params
-    + '</div>';
-}
 
-function buildDescription(data) {
-  var inner = (data.Description && data.Description.trim())
-    ? data.Description
-    : '<div class="warning-banner"><div class="warning-icon">\u26a0</div><div>'
-      + '<div class="warning-title">\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438 \u043d\u0435 \u0437\u0430\u043f\u043e\u043b\u043d\u0435\u043d\u043e</div>'
-      + '<div class="warning-body">\u0417\u0430\u043f\u043e\u043b\u043d\u0438\u0442\u0435 description.yaml \u043f\u0435\u0440\u0435\u0434 \u0441\u0434\u0430\u0447\u0435\u0439 \u0440\u0430\u0431\u043e\u0442\u044b.</div>'
-      + '</div></div>';
-  return '<section class="section" id="description" data-section>'
-    + '<div class="section-label">\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438</div>'
-    + '<div class="card"><div class="card-section">' + inner + '</div></div>'
-    + '</section>';
-}
+  function fmtSpeedup(f) {
+    if (!f || f < 1.05) return { text: '1.0\u00d7', cls: 'badge-neutral' };
+    return { text: f.toFixed(1) + '\u00d7', cls: 'badge-speedup' };
+  }
 
-function buildSummary(data) {
-  var rows = data.Before.Stats.map(function(b, i) {
-    var a    = data.After.Stats[i];
-    var p95d = calcDelta(b.P95, a.P95, false);
-    var spd  = fmtSpeedup(data.Speedups[i]);
-    var qpsd = calcDelta(b.QPS, a.QPS, true);
+  function badge(d) { return '<span class="badge ' + d.cls + '">' + esc(d.text) + '</span>'; }
+
+  function buildNavLinks(data) {
+    var links = [
+      { href: '#description', label: '\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435' },
+      { href: '#summary',     label: '\u0421\u0432\u043e\u0434\u043a\u0430' }
+    ].concat(data.Before.Stats.map(function(s) {
+      return { href: '#query-' + slugify(s.QueryName), label: s.QueryName, cls: 'is-query' };
+    }));
+    return links.map(function(l) {
+      return '<a href="' + l.href + '" class="nav-link ' + (l.cls || '') + '" data-href="' + l.href + '">' + esc(l.label) + '</a>';
+    }).join('');
+  }
+
+  function buildHeader(data) {
+    var params = '';
+    if (data.Iterations) {
+      params = '<div class="bench-params">'
+              + '<span class="bench-param">iterations: ' + data.Iterations + '</span>'
+              + '<span class="bench-param">concurrency: ' + data.Concurrency + '</span>'
+              + '</div>';
+    }
+    return '<div class="header">'
+            + '<h1>\u041e\u0442\u0447\u0451\u0442 \u043f\u043e \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438 PostgreSQL</h1>'
+            + '<div class="header-meta">Generated at ' + esc(data.GeneratedAt) + '</div>'
+            + params
+            + '</div>';
+  }
+
+  function buildDescription(data) {
+    var entries = data.Description || [];
+    var inner;
+    if (entries.length === 0) {
+      inner = '<div class="warning-banner"><div class="warning-icon">\u26a0</div><div>'
+              + '<div class="warning-title">\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438 \u043d\u0435 \u0437\u0430\u043f\u043e\u043b\u043d\u0435\u043d\u043e</div>'
+              + '<div class="warning-body">\u0417\u0430\u043f\u043e\u043b\u043d\u0438\u0442\u0435 description.yaml \u043f\u0435\u0440\u0435\u0434 \u0441\u0434\u0430\u0447\u0435\u0439 \u0440\u0430\u0431\u043e\u0442\u044b.</div>'
+              + '</div></div>';
+    } else {
+      inner = entries.map(function(e) {
+        var h = '<div class="opt-entry">';
+        if (e.Query)    h += '<div class="opt-query">' + esc(e.Query) + '</div>';
+        if (e.What)     h += '<div class="opt-field"><div class="opt-field-label">\u0427\u0442\u043e \u0438\u0437\u043c\u0435\u043d\u0435\u043d\u043e</div><div class="opt-field-value">' + esc(e.What) + '</div></div>';
+        if (e.Changes)  h += '<div class="opt-field"><div class="opt-field-label">\u0418\u0437\u043c\u0435\u043d\u0435\u043d\u0438\u044f</div><div class="opt-field-value"><pre><code>' + esc(e.Changes) + '</code></pre></div></div>';
+        if (e.Expected) h += '<div class="opt-field"><div class="opt-field-label">\u041e\u0436\u0438\u0434\u0430\u0435\u043c\u044b\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442</div><div class="opt-field-value">' + esc(e.Expected) + '</div></div>';
+        h += '</div>';
+        return h;
+      }).join('');
+    }
+    return '<section class="section" id="description" data-section>'
+            + '<div class="section-label">\u041e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438</div>'
+            + '<div class="card"><div class="card-section">' + inner + '</div></div>'
+            + '</section>';
+  }
+
+  function buildSummary(data) {
+    var rows = data.Before.Stats.map(function(b, i) {
+      var a    = data.After.Stats[i];
+      var p95d = calcDelta(b.P95, a.P95, false);
+      var spd  = fmtSpeedup(data.Speedups[i]);
+      var qpsd = calcDelta(b.QPS, a.QPS, true);
+      return '<tr>'
+              + '<td><span class="qname">' + esc(b.QueryName) + '</span></td>'
+              + '<td>' + fmtMs(b.P95) + '<span class="arrow">\u2192</span>' + fmtMs(a.P95) + '</td>'
+              + '<td>' + badge(p95d) + '</td>'
+              + '<td>' + badge(spd)  + '</td>'
+              + '<td>' + fmtQPS(b.QPS) + '<span class="arrow">\u2192</span>' + fmtQPS(a.QPS) + '</td>'
+              + '<td>' + badge(qpsd) + '</td>'
+              + '</tr>';
+    }).join('');
+    return '<section class="section" id="summary" data-section>'
+            + '<div class="section-label">\u0421\u0432\u043e\u0434\u043a\u0430</div>'
+            + '<div class="card"><table class="summary-table">'
+            + '<thead><tr>'
+            + '<th>\u0417\u0430\u043f\u0440\u043e\u0441</th>'
+            + '<th>p95: \u0434\u043e \u2192 \u043f\u043e\u0441\u043b\u0435</th>'
+            + '<th>p95 \u0394%</th>'
+            + '<th>Speedup</th>'
+            + '<th>QPS: \u0434\u043e \u2192 \u043f\u043e\u0441\u043b\u0435</th>'
+            + '<th>QPS \u0394%</th>'
+            + '</tr></thead>'
+            + '<tbody>' + rows + '</tbody>'
+            + '</table></div></section>';
+  }
+
+  function buildStatsRow(name, bVal, aVal, fmt, higher) {
+    var d = calcDelta(bVal, aVal, higher);
     return '<tr>'
-      + '<td><span class="qname">' + esc(b.QueryName) + '</span></td>'
-      + '<td>' + fmtMs(b.P95) + '<span class="arrow">\u2192</span>' + fmtMs(a.P95) + '</td>'
-      + '<td>' + badge(p95d) + '</td>'
-      + '<td>' + badge(spd)  + '</td>'
-      + '<td>' + fmtQPS(b.QPS) + '<span class="arrow">\u2192</span>' + fmtQPS(a.QPS) + '</td>'
-      + '<td>' + badge(qpsd) + '</td>'
-      + '</tr>';
-  }).join('');
-  return '<section class="section" id="summary" data-section>'
-    + '<div class="section-label">\u0421\u0432\u043e\u0434\u043a\u0430</div>'
-    + '<div class="card"><table class="summary-table">'
-    + '<thead><tr>'
-    + '<th>\u0417\u0430\u043f\u0440\u043e\u0441</th>'
-    + '<th>p95: \u0434\u043e \u2192 \u043f\u043e\u0441\u043b\u0435</th>'
-    + '<th>p95 \u0394%</th>'
-    + '<th>Speedup</th>'
-    + '<th>QPS: \u0434\u043e \u2192 \u043f\u043e\u0441\u043b\u0435</th>'
-    + '<th>QPS \u0394%</th>'
-    + '</tr></thead>'
-    + '<tbody>' + rows + '</tbody>'
-    + '</table></div></section>';
-}
-
-function buildStatsRow(name, bVal, aVal, fmt, higher) {
-  var d = calcDelta(bVal, aVal, higher);
-  return '<tr>'
-    + '<td class="metric-name">' + name + '</td>'
-    + '<td style="color:var(--text-muted)">' + fmt(bVal) + '</td>'
-    + '<td>' + fmt(aVal) + '</td>'
-    + '<td>' + badge(d) + '</td></tr>';
-}
-
-function buildStatsTable(b, a, speedup) {
-  speedup = fmtSpeedup(speedup);
-  var stddevRow = (b.StdDev || a.StdDev)
-    ? buildStatsRow('StdDev', b.StdDev, a.StdDev, fmtMs, false)
-    : '';
-  return '<table class="stats-table">'
-    + '<thead><tr><th>\u041c\u0435\u0442\u0440\u0438\u043a\u0430</th><th>\u0414\u043e</th><th>\u041f\u043e\u0441\u043b\u0435</th><th>\u0394%</th></tr></thead>'
-    + '<tbody>'
-    + '<tr class="group-sep"><td colspan="4">Latency</td></tr>'
-    + buildStatsRow('P50',  b.P50,  a.P50,  fmtMs, false)
-    + buildStatsRow('P95',  b.P95,  a.P95,  fmtMs, false)
-    + buildStatsRow('P99',  b.P99,  a.P99,  fmtMs, false)
-    + buildStatsRow('Min',  b.Min,  a.Min,  fmtMs, false)
-    + buildStatsRow('Max',  b.Max,  a.Max,  fmtMs, false)
-    + buildStatsRow('Mean', b.Mean, a.Mean, fmtMs, false)
-    + stddevRow
-    + '<tr><td class="metric-name">Speedup</td><td style="color:var(--text-muted)">\u2014</td><td>\u2014</td><td>' + badge(speedup) + '</td></tr>'
-    + '<tr class="group-sep"><td colspan="4">Throughput &amp; Reliability</td></tr>'
-    + buildStatsRow('QPS',       b.QPS,       a.QPS,       fmtQPS, true)
-    + buildStatsRow('ErrorRate', b.ErrorRate, a.ErrorRate, fmtErr, false)
-    + '</tbody></table>';
-}
-
-function buildPlanDiff(diff) {
-  if (!diff) return '';
-  var summaryHtml = '';
-  if (diff.Summary && diff.Summary.length) {
-    summaryHtml = '<ul class="plan-summary">'
-      + diff.Summary.map(function(s) { return '<li>' + esc(s) + '</li>'; }).join('')
-      + '</ul>';
+            + '<td class="metric-name">' + name + '</td>'
+            + '<td style="color:var(--text-muted)">' + fmt(bVal) + '</td>'
+            + '<td>' + fmt(aVal) + '</td>'
+            + '<td>' + badge(d) + '</td></tr>';
   }
-  var planTrees = '';
-  if (diff.BeforeText || diff.AfterText) {
-    var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
-    var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
-    planTrees = '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
-      + '<div class="plan-trees">' + before + after + '</div></details>';
+
+  function buildStatsTable(b, a, speedup) {
+    speedup = fmtSpeedup(speedup);
+    var stddevRow = (b.StdDev || a.StdDev)
+            ? buildStatsRow('StdDev', b.StdDev, a.StdDev, fmtMs, false)
+            : '';
+    return '<table class="stats-table">'
+            + '<thead><tr><th>\u041c\u0435\u0442\u0440\u0438\u043a\u0430</th><th>\u0414\u043e</th><th>\u041f\u043e\u0441\u043b\u0435</th><th>\u0394%</th></tr></thead>'
+            + '<tbody>'
+            + '<tr class="group-sep"><td colspan="4">Latency</td></tr>'
+            + buildStatsRow('P50',  b.P50,  a.P50,  fmtMs, false)
+            + buildStatsRow('P95',  b.P95,  a.P95,  fmtMs, false)
+            + buildStatsRow('P99',  b.P99,  a.P99,  fmtMs, false)
+            + buildStatsRow('Min',  b.Min,  a.Min,  fmtMs, false)
+            + buildStatsRow('Max',  b.Max,  a.Max,  fmtMs, false)
+            + buildStatsRow('Mean', b.Mean, a.Mean, fmtMs, false)
+            + stddevRow
+            + '<tr><td class="metric-name">Speedup</td><td style="color:var(--text-muted)">\u2014</td><td>\u2014</td><td>' + badge(speedup) + '</td></tr>'
+            + '<tr class="group-sep"><td colspan="4">Throughput &amp; Reliability</td></tr>'
+            + buildStatsRow('QPS',       b.QPS,       a.QPS,       fmtQPS, true)
+            + buildStatsRow('ErrorRate', b.ErrorRate, a.ErrorRate, fmtErr, false)
+            + '</tbody></table>';
   }
-  if (!summaryHtml && !planTrees) return '';
-  return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
-}
 
-function buildQueryCard(b, a, diff, speedup) {
-  var anchor = 'query-' + slugify(b.QueryName);
-  return '<div class="card section" id="' + anchor + '" data-section>'
-    + '<div class="card-header"><span class="card-query-name">' + esc(b.QueryName) + '</span></div>'
-    + '<div class="card-section"><div class="card-section-label">\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430</div>' + buildStatsTable(b, a, speedup) + '</div>'
-    + '<div class="card-section">' + buildPlanDiff(diff) + '</div>'
-    + '</div>';
-}
+  function buildPlanDiff(diff) {
+    if (!diff) return '';
+    var summaryHtml = '';
+    if (diff.Summary && diff.Summary.length) {
+      summaryHtml = '<ul class="plan-summary">'
+              + diff.Summary.map(function(s) { return '<li>' + esc(s) + '</li>'; }).join('')
+              + '</ul>';
+    }
+    var planTrees = '';
+    if (diff.BeforeText || diff.AfterText) {
+      var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
+      var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
+      planTrees = '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
+              + '<div class="plan-trees">' + before + after + '</div></details>';
+    }
+    if (!summaryHtml && !planTrees) return '';
+    return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
+  }
 
-function buildFooter(data) {
-  var gh = '<svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
-  return '<footer class="footer">'
-    + '<span>Generated by pgcompare \u00b7 ' + esc(data.GeneratedAt) + '</span>'
-    + '<a href="https://github.com/pg-tools/pgcompare" class="footer-gh" target="_blank" rel="noopener">' + gh + 'pg-tools/pgcompare</a>'
-    + '</footer>';
-}
+  function buildQueryCard(b, a, diff, speedup) {
+    var anchor = 'query-' + slugify(b.QueryName);
+    return '<div class="card section" id="' + anchor + '" data-section>'
+            + '<div class="card-header"><span class="card-query-name">' + esc(b.QueryName) + '</span></div>'
+            + '<div class="card-section"><div class="card-section-label">\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430</div>' + buildStatsTable(b, a, speedup) + '</div>'
+            + '<div class="card-section">' + buildPlanDiff(diff) + '</div>'
+            + '</div>';
+  }
 
-function setupScrollSpy() {
-  var links    = document.querySelectorAll('.nav-link[data-href]');
-  var sections = document.querySelectorAll('[data-section]');
-  var obs = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        var id = '#' + e.target.id;
-        links.forEach(function(l) { l.classList.toggle('active', l.dataset.href === id); });
-      }
-    });
-  }, { rootMargin: '-10% 0px -80% 0px' });
-  sections.forEach(function(s) { obs.observe(s); });
-}
+  function buildFooter(data) {
+    var gh = '<svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>';
+    return '<footer class="footer">'
+            + '<span>Generated by pgcompare \u00b7 ' + esc(data.GeneratedAt) + '</span>'
+            + '<a href="https://github.com/pg-tools/pgcompare" class="footer-gh" target="_blank" rel="noopener">' + gh + 'pg-tools/pgcompare</a>'
+            + '</footer>';
+  }
 
-(function() {
-  var data = window.reportData;
+  function setupScrollSpy() {
+    var links    = document.querySelectorAll('.nav-link[data-href]');
+    var sections = document.querySelectorAll('[data-section]');
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          var id = '#' + e.target.id;
+          links.forEach(function(l) { l.classList.toggle('active', l.dataset.href === id); });
+        }
+      });
+    }, { rootMargin: '-10% 0px -80% 0px' });
+    sections.forEach(function(s) { obs.observe(s); });
+  }
 
-  document.getElementById('nav-links').innerHTML = buildNavLinks(data);
+  (function() {
+    var data = window.reportData;
 
-  var cards = data.Before.Stats.map(function(b, i) {
-    var a       = data.After.Stats[i];
-    var diff    = (data.Diffs || []).filter(function(d) { return d.QueryName === b.QueryName; })[0] || null;
-    var speedup = (data.Speedups || [])[i] || 0;
-    return buildQueryCard(b, a, diff, speedup);
-  }).join('');
+    document.getElementById('nav-links').innerHTML = buildNavLinks(data);
 
-  document.getElementById('app').innerHTML =
-    buildHeader(data) + buildDescription(data) + buildSummary(data) + cards + buildFooter(data);
+    var cards = data.Before.Stats.map(function(b, i) {
+      var a       = data.After.Stats[i];
+      var diff    = (data.Diffs || []).filter(function(d) { return d.QueryName === b.QueryName; })[0] || null;
+      var speedup = (data.Speedups || [])[i] || 0;
+      return buildQueryCard(b, a, diff, speedup);
+    }).join('');
 
-  setupScrollSpy();
-})();
+    document.getElementById('app').innerHTML =
+            buildHeader(data) + buildDescription(data) + buildSummary(data) + cards + buildFooter(data);
+
+    setupScrollSpy();
+  })();
 </script>
 </body>
 </html>
