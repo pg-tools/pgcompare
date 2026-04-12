@@ -19,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh 
 Установить конкретную версию:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -v v0.1.0
+curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -v v1.0.1
 ```
 
 Установить в произвольную директорию:

@@ -19,7 +19,7 @@ curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh 
 Install a specific version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -v v0.1.0
+curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -v v1.0.1
 ```
 
 Install to a custom directory:
