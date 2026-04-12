@@ -195,13 +195,14 @@ func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, 
 	extra := iterations % concurrency
 
 	wg.Add(int(concurrency))
+
 	for worker := range concurrency {
 		runs := base
 		if worker < extra {
 			runs++
 		}
-
-		wg.Go(func() {
+		go func() {
+			defer wg.Done()
 			for range runs {
 				start := time.Now()
 				rows, err := b.db.QueryContext(ctx, q.SQL)
@@ -220,7 +221,7 @@ func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, 
 					durations = append(durations, elapsed)
 				}()
 			}
-		})
+		}()
 	}
 
 	wg.Wait()
