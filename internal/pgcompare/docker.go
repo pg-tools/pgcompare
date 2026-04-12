@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -87,4 +88,48 @@ func (d *dockerComparator) buildSetupCommand() string {
 	command = strings.ReplaceAll(command, fmt.Sprintf("${%s}", defaultDockerComposeEnv), compose)
 
 	return command
+}
+
+func shellCommand(ctx context.Context, command string) *exec.Cmd {
+	if runtime.GOOS == "windows" {
+		return exec.CommandContext(ctx, "cmd", "/C", command)
+	}
+	return exec.CommandContext(ctx, "sh", "-c", command)
+}
+
+func envWithOverride(env []string, key, value string) []string {
+	out := make([]string, len(env))
+	copy(out, env)
+
+	for i, item := range out {
+		name, _, ok := strings.Cut(item, "=")
+		if !ok {
+			continue
+		}
+		if sameEnvKey(name, key) {
+			out[i] = key + "=" + value
+			return out
+		}
+	}
+
+	return append(out, key+"="+value)
+}
+
+func sameEnvKey(a, b string) bool {
+	if runtime.GOOS == "windows" {
+		return strings.EqualFold(a, b)
+	}
+	return a == b
+}
+
+func detectDockerCompose() ([]string, error) {
+	if err := exec.Command("docker", "compose", "version").Run(); err == nil {
+		return []string{"docker", "compose"}, nil
+	}
+
+	if err := exec.Command("docker-compose", "version").Run(); err == nil {
+		return []string{"docker-compose"}, nil
+	}
+
+	return nil, fmt.Errorf("docker compose v2 or docker-compose v1 is required")
 }
