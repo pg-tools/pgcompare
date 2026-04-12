@@ -69,6 +69,7 @@ func (d *dockerComparator) runSetup(ctx context.Context, version string) error {
 	env = envWithOverride(env, defaultDockerComposeEnv, strings.Join(d.composeCmd, " "))
 	cmd.Env = env
 
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 
