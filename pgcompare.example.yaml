@@ -1,4 +1,5 @@
 migration:
+  env_var: MIGRATION_VERSION
   before_version: "3"
   after_version: "5"
 
