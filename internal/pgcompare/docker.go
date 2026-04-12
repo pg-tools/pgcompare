@@ -46,7 +46,7 @@ func (d *dockerComparator) Cleanup(ctx context.Context) error {
 }
 
 func (d *dockerComparator) PrepareVersion(ctx context.Context, version string) error {
-	d.log.Info("prepare docker version", "version", version)
+	d.log.Info("prepare docker version", "version", version, "env_var", d.cfg.Migration.EnvVar)
 
 	if err := d.Cleanup(ctx); err != nil {
 		return fmt.Errorf("prepare docker version: %w", err)
@@ -66,7 +66,7 @@ func (d *dockerComparator) runSetup(ctx context.Context, version string) error {
 	cmd.Dir = d.cfg.ProjectDir
 
 	env := os.Environ()
-	env = envWithOverride(env, defaultMigrationVersionEnv, version)
+	env = envWithOverride(env, d.cfg.Migration.EnvVar, version)
 	env = envWithOverride(env, defaultDockerComposeEnv, strings.Join(d.composeCmd, " "))
 	cmd.Env = env
 
