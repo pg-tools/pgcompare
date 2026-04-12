@@ -94,6 +94,9 @@
     .plan-trees { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
     @media (max-width: 640px) { .plan-trees { grid-template-columns: 1fr; } }
     .plan-tree-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px; }
+    .plan-summary { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 5px; }
+    .plan-summary li { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--text); }
+    .plan-summary li::before { content: '\2192'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
     .plan-box { background: var(--code-bg); border-radius: 6px; padding: 14px; overflow-x: auto; }
     .plan-box pre { margin: 0; color: var(--code-text); font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace; font-size: 12px; line-height: 1.8; white-space: pre; }
     .footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-light); }
@@ -119,7 +122,7 @@ window.reportData = (function() {
   {{ end }}var afterStats = [];
   {{ range .After.Stats }}afterStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:0,QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
   {{ end }}var diffs = [];
-  {{ range .Diffs }}diffs.push({QueryName:{{ .QueryName }},BeforeText:{{ renderPlan .Before }},AfterText:{{ renderPlan .After }}});
+  {{ range .Diffs }}diffs.push({QueryName:{{ .QueryName }},Summary:[{{ range .Summary }}{{ . }},{{ end }}],BeforeText:{{ renderPlan .Before }},AfterText:{{ renderPlan .After }}});
   {{ end }}return {
     GeneratedAt: {{ .GeneratedAt.Format "02.01.2006, 15:04:05" }},
     Iterations: 0,
@@ -254,16 +257,22 @@ function buildStatsTable(b, a) {
 }
 
 function buildPlanDiff(diff) {
-  if (!diff || (!diff.BeforeText && !diff.AfterText)) return '';
-  var before = diff.BeforeText
-    ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>'
-    : '';
-  var after = diff.AfterText
-    ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>' + esc(diff.AfterText) + '</pre></div></div>'
-    : '';
-  return '<div class="card-section-label">Query Plan</div>'
-    + '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
-    + '<div class="plan-trees">' + before + after + '</div></details>';
+  if (!diff) return '';
+  var summaryHtml = '';
+  if (diff.Summary && diff.Summary.length) {
+    summaryHtml = '<ul class="plan-summary">'
+      + diff.Summary.map(function(s) { return '<li>' + esc(s) + '</li>'; }).join('')
+      + '</ul>';
+  }
+  var planTrees = '';
+  if (diff.BeforeText || diff.AfterText) {
+    var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
+    var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
+    planTrees = '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
+      + '<div class="plan-trees">' + before + after + '</div></details>';
+  }
+  if (!summaryHtml && !planTrees) return '';
+  return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
 }
 
 function buildQueryCard(b, a, diff) {
