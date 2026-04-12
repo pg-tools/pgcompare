@@ -57,6 +57,14 @@ func buildStats(name string, durations []time.Duration, errors []string, iterati
 	}
 	stat.Mean = sum / time.Duration(len(durations))
 
+	meanF := float64(stat.Mean)
+	var sumSq float64
+	for _, d := range durations {
+		diff := float64(d) - meanF
+		sumSq += diff * diff
+	}
+	stat.StdDev = time.Duration(math.Sqrt(sumSq / float64(len(durations))))
+
 	if totalWall > 0 {
 		stat.QPS = float64(len(durations)) / totalWall.Seconds()
 	}

@@ -150,8 +150,18 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		}
 	}
 
+	speedups := make([]float64, len(beforeStats))
+	for i := range beforeStats {
+		if afterStats[i].P95 > 0 {
+			speedups[i] = float64(beforeStats[i].P95) / float64(afterStats[i].P95)
+		}
+	}
+
 	data := pgcompare.ReportData{
 		GeneratedAt: time.Now(),
+		Iterations:  cfg.Benchmark.Iterations,
+		Concurrency: cfg.Benchmark.Concurrency,
+		Speedups:    speedups,
 		Before: &pgcompare.BenchResult{
 			Phase: "before",
 			Stats: beforeStats,

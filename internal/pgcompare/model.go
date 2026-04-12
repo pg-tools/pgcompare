@@ -8,11 +8,11 @@ type Query struct {
 }
 
 type Stats struct {
-	QueryName                     string
-	Min, Max, P50, P95, P99, Mean time.Duration
-	QPS                           float64
-	ErrorRate                     float64
-	Errors                        []string
+	QueryName                             string
+	Min, Max, P50, P95, P99, Mean, StdDev time.Duration
+	QPS                                   float64
+	ErrorRate                             float64
+	Errors                                []string
 }
 
 type PlanNode struct {
@@ -41,6 +41,7 @@ type ReportData struct {
 	GeneratedAt time.Time
 	Iterations  int
 	Concurrency int
+	Speedups    []float64
 	Before      *BenchResult
 	After       *BenchResult
 	Diffs       []PlanDiff

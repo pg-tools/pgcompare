@@ -118,15 +118,17 @@
 /* pgcompare report data — injected by Go */
 window.reportData = (function() {
   var beforeStats = [];
-  {{ range .Before.Stats }}beforeStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:0,QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
+  {{ range .Before.Stats }}beforeStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
   {{ end }}var afterStats = [];
-  {{ range .After.Stats }}afterStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:0,QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
+  {{ range .After.Stats }}afterStats.push({QueryName:{{ .QueryName }},Min:{{ .Min.Microseconds }},Max:{{ .Max.Microseconds }},P50:{{ .P50.Microseconds }},P95:{{ .P95.Microseconds }},P99:{{ .P99.Microseconds }},Mean:{{ .Mean.Microseconds }},StdDev:{{ .StdDev.Microseconds }},QPS:{{ .QPS }},ErrorRate:{{ .ErrorRate }}});
   {{ end }}var diffs = [];
   {{ range .Diffs }}diffs.push({QueryName:{{ .QueryName }},Summary:[{{ range .Summary }}{{ . }},{{ end }}],BeforeText:{{ renderPlan .Before }},AfterText:{{ renderPlan .After }}});
-  {{ end }}return {
+  {{ end }}var speedups = [{{ range .Speedups }}{{ . }},{{ end }}];
+  return {
     GeneratedAt: {{ .GeneratedAt.Format "02.01.2006, 15:04:05" }},
     Iterations: {{ .Iterations }},
     Concurrency: {{ .Concurrency }},
+    Speedups: speedups,
     Description: {{ .Description }},
     Before: {Phase: {{ .Before.Phase }}, Stats: beforeStats},
     After:  {Phase: {{ .After.Phase }},  Stats: afterStats},
@@ -148,10 +150,8 @@ function calcDelta(before, after, higherIsBetter) {
   return { text: (pct > 0 ? '+' : '') + pct.toFixed(1) + '%', cls: good ? 'badge-good' : 'badge-bad' };
 }
 
-function calcSpeedup(beforeUs, afterUs) {
-  if (!afterUs || afterUs === 0) return { text: '\u2014', cls: 'badge-neutral' };
-  var f = beforeUs / afterUs;
-  if (f < 1.05) return { text: '1.0\u00d7', cls: 'badge-neutral' };
+function fmtSpeedup(f) {
+  if (!f || f < 1.05) return { text: '1.0\u00d7', cls: 'badge-neutral' };
   return { text: f.toFixed(1) + '\u00d7', cls: 'badge-speedup' };
 }
 
@@ -201,7 +201,7 @@ function buildSummary(data) {
   var rows = data.Before.Stats.map(function(b, i) {
     var a    = data.After.Stats[i];
     var p95d = calcDelta(b.P95, a.P95, false);
-    var spd  = calcSpeedup(b.P95, a.P95);
+    var spd  = fmtSpeedup(data.Speedups[i]);
     var qpsd = calcDelta(b.QPS, a.QPS, true);
     return '<tr>'
       + '<td><span class="qname">' + esc(b.QueryName) + '</span></td>'
@@ -236,8 +236,8 @@ function buildStatsRow(name, bVal, aVal, fmt, higher) {
     + '<td>' + badge(d) + '</td></tr>';
 }
 
-function buildStatsTable(b, a) {
-  var speedup = calcSpeedup(b.P95, a.P95);
+function buildStatsTable(b, a, speedup) {
+  speedup = fmtSpeedup(speedup);
   var stddevRow = (b.StdDev || a.StdDev)
     ? buildStatsRow('StdDev', b.StdDev, a.StdDev, fmtMs, false)
     : '';
@@ -278,11 +278,11 @@ function buildPlanDiff(diff) {
   return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
 }
 
-function buildQueryCard(b, a, diff) {
+function buildQueryCard(b, a, diff, speedup) {
   var anchor = 'query-' + slugify(b.QueryName);
   return '<div class="card section" id="' + anchor + '" data-section>'
     + '<div class="card-header"><span class="card-query-name">' + esc(b.QueryName) + '</span></div>'
-    + '<div class="card-section"><div class="card-section-label">\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430</div>' + buildStatsTable(b, a) + '</div>'
+    + '<div class="card-section"><div class="card-section-label">\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430</div>' + buildStatsTable(b, a, speedup) + '</div>'
     + '<div class="card-section">' + buildPlanDiff(diff) + '</div>'
     + '</div>';
 }
@@ -315,9 +315,10 @@ function setupScrollSpy() {
   document.getElementById('nav-links').innerHTML = buildNavLinks(data);
 
   var cards = data.Before.Stats.map(function(b, i) {
-    var a    = data.After.Stats[i];
-    var diff = (data.Diffs || []).filter(function(d) { return d.QueryName === b.QueryName; })[0] || null;
-    return buildQueryCard(b, a, diff);
+    var a       = data.After.Stats[i];
+    var diff    = (data.Diffs || []).filter(function(d) { return d.QueryName === b.QueryName; })[0] || null;
+    var speedup = (data.Speedups || [])[i] || 0;
+    return buildQueryCard(b, a, diff, speedup);
   }).join('');
 
   document.getElementById('app').innerHTML =
