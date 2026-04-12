@@ -233,6 +233,8 @@ Rules:
 
 ## Report Contents
 
+See [example_report.html](./example_report.html) for a complete example of the generated report.
+
 The HTML report is designed to answer three practical questions:
 
 1. What exactly was changed?
