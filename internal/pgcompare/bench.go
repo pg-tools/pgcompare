@@ -3,18 +3,29 @@ package pgcompare
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log/slog"
-	"math"
 	"os"
-	"path/filepath"
-	"sort"
 	"strings"
 	"sync"
 	"time"
-
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
+
+const explainQuery = "EXPLAIN (ANALYZE, FORMAT JSON)"
+
+type explainResult []struct {
+	Plan explainNode `json:"Plan"`
+}
+
+type explainNode struct {
+	NodeType        string        `json:"Node Type"`
+	RelationName    string        `json:"Relation Name"`
+	IndexName       string        `json:"Index Name"`
+	ActualRows      float64       `json:"Actual Rows"`
+	ActualTotalTime float64       `json:"Actual Total Time"`
+	Plans           []explainNode `json:"Plans"`
+}
 
 type benchmark struct {
 	log *slog.Logger
@@ -34,11 +45,7 @@ func NewBenchmark(log *slog.Logger, dsn string) (*benchmark, error) {
 }
 
 func (b *benchmark) ParseQueries(path string) ([]Query, error) {
-	fp, err := filepath.Abs(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve absolute path: %w", err)
-	}
-	data, err := os.ReadFile(fp)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
 	}
@@ -141,7 +148,14 @@ func (b *benchmark) ValidateMatchingQueryNames(beforeQueries, afterQueries []Que
 	return nil
 }
 
-func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency uint, phase string) (*BenchResult, error) {
+func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency uint) ([]Stats, error) {
+	if iterations == 0 {
+		return nil, fmt.Errorf("iterations cannot be zero")
+	}
+	if concurrency == 0 {
+		return nil, fmt.Errorf("concurrency cannot be zero")
+	}
+
 	stats := make([]Stats, len(queries))
 	for i, q := range queries {
 		stat, err := b.runQueryBenchmark(ctx, q, iterations, concurrency)
@@ -151,10 +165,7 @@ func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concur
 		stats[i] = stat
 	}
 
-	return &BenchResult{
-		Phase: phase,
-		Stats: stats,
-	}, nil
+	return stats, nil
 }
 
 func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, concurrency uint) (Stats, error) {
@@ -210,72 +221,46 @@ func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, 
 	return buildStats(q.Name, durations, errors, iterations, totalWall), nil
 }
 
-func drainRows(rows *sql.Rows) error {
-	defer rows.Close()
-	cols, err := rows.Columns()
-	if err != nil {
-		return fmt.Errorf("failed to get columns: %w", err)
+func (b *benchmark) Explain(ctx context.Context, queries []Query) ([]*PlanNode, error) {
+	if len(queries) == 0 {
+		return nil, fmt.Errorf("no queries found")
 	}
-	values := make([]any, len(cols))
-	dest := make([]any, len(cols))
-	for i := range values {
-		dest[i] = &values[i]
-	}
-	for rows.Next() {
-		if err := rows.Scan(dest...); err != nil {
-			return fmt.Errorf("failed to scan row: %w", err)
+	plans := make([]*PlanNode, len(queries))
+	for i, q := range queries {
+		query := explainQuery + " " + q.SQL
+		var raw []byte
+		err := b.db.QueryRowContext(ctx, query).Scan(&raw)
+		if err != nil {
+			return nil, fmt.Errorf("failed to explain query %q: %w", q.Name, err)
 		}
+		var result explainResult
+		if err := json.Unmarshal(raw, &result); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal explain result: %w", err)
+		}
+		if len(result) == 0 {
+			return nil, fmt.Errorf("empty explain result for query %q", q.Name)
+		}
+		plan := convertPlanNode(result[0].Plan)
+		plans[i] = plan
 	}
 
-	return rows.Err()
+	return plans, nil
 }
 
-func buildStats(name string, durations []time.Duration, errors []string, iterations uint, totalWall time.Duration) Stats {
-	sort.Slice(durations, func(i, j int) bool { return durations[i] < durations[j] })
-
-	stat := Stats{
-		QueryName: name,
-		ErrorRate: float64(len(errors)) / float64(iterations),
-		Errors:    errors,
+func convertPlanNode(node explainNode) *PlanNode {
+	children := make([]*PlanNode, 0, len(node.Plans))
+	for _, child := range node.Plans {
+		children = append(children, convertPlanNode(child))
 	}
 
-	if len(durations) == 0 {
-		return stat
+	return &PlanNode{
+		NodeType:        node.NodeType,
+		RelationName:    node.RelationName,
+		IndexName:       node.IndexName,
+		ActualRows:      node.ActualRows,
+		ActualTotalTime: time.Duration(node.ActualTotalTime * float64(time.Millisecond)),
+		Children:        children,
 	}
-
-	stat.Min = durations[0]
-	stat.Max = durations[len(durations)-1]
-	stat.P50 = percentile(durations, 0.50)
-	stat.P95 = percentile(durations, 0.95)
-	stat.P99 = percentile(durations, 0.99)
-
-	var sum time.Duration
-	for _, d := range durations {
-		sum += d
-	}
-	stat.Mean = sum / time.Duration(len(durations))
-
-	if totalWall > 0 {
-		stat.QPS = float64(len(durations)) / totalWall.Seconds()
-	}
-
-	return stat
-}
-
-func percentile(values []time.Duration, p float64) time.Duration {
-	if len(values) == 0 {
-		return 0
-	}
-
-	idx := int(math.Ceil(float64(len(values))*p)) - 1
-	if idx < 0 {
-		idx = 0
-	}
-	if idx >= len(values) {
-		idx = len(values) - 1
-	}
-
-	return values[idx]
 }
 
 func (b *benchmark) Close() error {
