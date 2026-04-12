@@ -139,17 +139,6 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("diff plans: %w", err)
 	}
 
-	description := ""
-	if cfg.Report.Description != "" {
-		descPath := filepath.Join(cfg.ProjectDir, cfg.Report.Description)
-		raw, err := os.ReadFile(descPath)
-		if err != nil {
-			log.Warn("could not read description file", "path", descPath, "err", err)
-		} else {
-			description = string(raw)
-		}
-	}
-
 	speedups := make([]float64, len(beforeStats))
 	for i := range beforeStats {
 		if afterStats[i].P95 > 0 {
@@ -173,7 +162,7 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 			Plans: afterPlans,
 		},
 		Diffs:       diffs,
-		Description: description,
+		Description: cfg.DescriptionHTML,
 	}
 
 	fmt.Fprintln(os.Stderr, "Generating report...")

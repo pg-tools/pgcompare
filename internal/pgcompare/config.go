@@ -2,12 +2,21 @@ package pgcompare
 
 import (
 	"fmt"
+	"html"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v3"
 )
+
+type descriptionEntry struct {
+	Query    string `yaml:"query"`
+	What     string `yaml:"what"`
+	Changes  string `yaml:"changes"`
+	Expected string `yaml:"expected"`
+}
 
 type Config struct {
 	ProjectDir string
@@ -29,8 +38,12 @@ type Config struct {
 	} `yaml:"benchmark"`
 
 	Report struct {
-		Description string `yaml:"description"`
+		Description []descriptionEntry `yaml:"description"`
 	} `yaml:"report"`
+
+	// DescriptionHTML содержит HTML, сгенерированный из Report.Description.
+	// Заполняется в LoadConfig.
+	DescriptionHTML string
 
 	DSN string
 }
@@ -54,6 +67,7 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	cfg.ProjectDir = projectDir
+	cfg.DescriptionHTML = buildDescriptionHTML(cfg.Report.Description)
 
 	if err := godotenv.Load(filepath.Join(projectDir, ".env")); err != nil {
 		return nil, fmt.Errorf("load .env: %w", err)
@@ -66,6 +80,41 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func buildDescriptionHTML(entries []descriptionEntry) string {
+	if len(entries) == 0 {
+		return ""
+	}
+
+	var b strings.Builder
+	for _, e := range entries {
+		b.WriteString(`<div class="opt-entry">`)
+		if e.Query != "" {
+			fmt.Fprintf(&b, `<div class="opt-query">%s</div>`, html.EscapeString(e.Query))
+		}
+		if e.What != "" {
+			fmt.Fprintf(&b,
+				`<div class="opt-field"><div class="opt-field-label">Что оптимизировалось</div>`+
+					`<div class="opt-field-value">%s</div></div>`,
+				html.EscapeString(e.What))
+		}
+		if e.Changes != "" {
+			fmt.Fprintf(&b,
+				`<div class="opt-field"><div class="opt-field-label">Изменения</div>`+
+					`<div class="opt-field-value"><pre><code>%s</code></pre></div></div>`,
+				html.EscapeString(e.Changes))
+		}
+		if e.Expected != "" {
+			fmt.Fprintf(&b,
+				`<div class="opt-field"><div class="opt-field-label">Ожидаемый результат</div>`+
+					`<div class="opt-field-value">%s</div></div>`,
+				html.EscapeString(e.Expected))
+		}
+		b.WriteString(`</div>`)
+	}
+
+	return b.String()
 }
 
 func (c *Config) validate() error {
