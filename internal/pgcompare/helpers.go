@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -74,4 +75,98 @@ func percentile(values []time.Duration, p float64) time.Duration {
 	}
 
 	return values[idx]
+}
+
+func summarizePlanDiff(before, after *PlanNode) []string {
+	var summary []string
+	seen := make(map[string]struct{})
+
+	var walk func(before, after *PlanNode)
+	walk = func(before, after *PlanNode) {
+		if before == nil || after == nil {
+			return
+		}
+
+		add := func(msg string) {
+			if msg == "" {
+				return
+			}
+			if _, ok := seen[msg]; ok {
+				return
+			}
+			seen[msg] = struct{}{}
+			summary = append(summary, msg)
+		}
+
+		if before.NodeType != after.NodeType {
+			msg := fmt.Sprintf("%s -> %s", before.NodeType, after.NodeType)
+			if before.RelationName != "" || after.RelationName != "" {
+				relation := after.RelationName
+				if relation == "" {
+					relation = before.RelationName
+				}
+				msg += fmt.Sprintf(" on %s", relation)
+			}
+			add(msg)
+		}
+
+		if before.NodeType == "Sort" && after.NodeType != "Sort" {
+			add("Explicit Sort removed")
+		}
+		if before.NodeType != "Sort" && after.NodeType == "Sort" {
+			add("Explicit Sort added")
+		}
+
+		if before.IndexName != after.IndexName && (before.IndexName != "" || after.IndexName != "") {
+			switch {
+			case before.IndexName == "":
+				add(fmt.Sprintf("Index added: %s", after.IndexName))
+			case after.IndexName == "":
+				add(fmt.Sprintf("Index removed: %s", before.IndexName))
+			default:
+				add(fmt.Sprintf("Index changed: %s -> %s", before.IndexName, after.IndexName))
+			}
+		}
+
+		if before.NodeType == "Seq Scan" && strings.Contains(after.NodeType, "Index") {
+			target := after.IndexName
+			if target == "" {
+				target = after.RelationName
+			}
+			add(fmt.Sprintf("Seq Scan replaced with %s on %s", after.NodeType, target))
+		}
+
+		if before.ActualRows != after.ActualRows {
+			add(fmt.Sprintf("Actual rows changed: %.0f -> %.0f", before.ActualRows, after.ActualRows))
+		}
+
+		n := len(before.Children)
+		if len(after.Children) < n {
+			n = len(after.Children)
+		}
+		for i := 0; i < n; i++ {
+			if len(summary) >= 5 {
+				return
+			}
+			walk(before.Children[i], after.Children[i])
+		}
+
+		if len(summary) >= 5 {
+			return
+		}
+		if len(before.Children) > len(after.Children) {
+			add(fmt.Sprintf("Removed %d child node(s)", len(before.Children)-len(after.Children)))
+		}
+		if len(after.Children) > len(before.Children) {
+			add(fmt.Sprintf("Added %d child node(s)", len(after.Children)-len(before.Children)))
+		}
+	}
+
+	walk(before, after)
+
+	if len(summary) > 5 {
+		summary = summary[:5]
+	}
+
+	return summary
 }

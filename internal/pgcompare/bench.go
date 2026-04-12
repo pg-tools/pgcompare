@@ -247,6 +247,58 @@ func (b *benchmark) Explain(ctx context.Context, queries []Query) ([]*PlanNode, 
 	return plans, nil
 }
 
+func (b *benchmark) DiffPlans(
+	beforeQueries []Query,
+	beforePlans []*PlanNode,
+	afterQueries []Query,
+	afterPlans []*PlanNode,
+) ([]PlanDiff, error) {
+	if len(beforeQueries) != len(beforePlans) {
+		return nil, fmt.Errorf("before queries/plans mismatch: %d queries, %d plans", len(beforeQueries), len(beforePlans))
+	}
+	if len(afterQueries) != len(afterPlans) {
+		return nil, fmt.Errorf("after queries/plans mismatch: %d queries, %d plans", len(afterQueries), len(afterPlans))
+	}
+
+	beforeByName := make(map[string]*PlanNode, len(beforeQueries))
+	for i, q := range beforeQueries {
+		beforeByName[q.Name] = beforePlans[i]
+	}
+
+	afterByName := make(map[string]*PlanNode, len(afterQueries))
+	for i, q := range afterQueries {
+		afterByName[q.Name] = afterPlans[i]
+	}
+
+	diffs := make([]PlanDiff, 0, len(beforeQueries))
+
+	for _, q := range beforeQueries {
+		beforePlan, ok := beforeByName[q.Name]
+		if !ok {
+			return nil, fmt.Errorf("missing before plan for query %q", q.Name)
+		}
+
+		afterPlan, ok := afterByName[q.Name]
+		if !ok {
+			return nil, fmt.Errorf("missing after plan for query %q", q.Name)
+		}
+
+		summary := summarizePlanDiff(beforePlan, afterPlan)
+		if len(summary) == 0 {
+			summary = []string{"No significant plan changes detected"}
+		}
+
+		diffs = append(diffs, PlanDiff{
+			QueryName: q.Name,
+			Before:    beforePlan,
+			After:     afterPlan,
+			Summary:   summary,
+		})
+	}
+
+	return diffs, nil
+}
+
 func convertPlanNode(node explainNode) *PlanNode {
 	children := make([]*PlanNode, 0, len(node.Plans))
 	for _, child := range node.Plans {
