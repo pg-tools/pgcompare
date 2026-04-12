@@ -106,7 +106,7 @@ migration:
   after_version: "5"
 
 setup:
-  command: "$DOCKER_COMPOSE run --rm migrate && $DOCKER_COMPOSE run --rm seed"
+  command: "$DOCKER_COMPOSE up -d postgres && $DOCKER_COMPOSE run --rm -T migrate && $DOCKER_COMPOSE run --rm -T seed"
 
 benchmark:
   before_queries: queries_before.sql
@@ -123,6 +123,12 @@ report:
           ON users (active, created_at DESC);
       expected: Снизить p95 и увеличить QPS для этого запроса.
 ```
+
+Пояснения к флагам setup-команды:
+
+- `up -d postgres` — явно запускает контейнер PostgreSQL перед миграциями, гарантируя доступность базы
+- `-T` — отключает выделение TTY. По умолчанию `docker compose run` пытается выделить TTY, что приводит к ошибке при запуске из `pgcompare` (неинтерактивный контекст). Без `-T` setup-команда завершится с ошибкой
+- `--rm` — удаляет контейнер после завершения. Без этого флага каждый запуск `pgcompare run` будет оставлять остановленные контейнеры migrate/seed
 
 Как работает переключение миграций:
 
