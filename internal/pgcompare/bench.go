@@ -330,6 +330,36 @@ func convertPlanNode(node explainNode) *PlanNode {
 	}
 }
 
+func (b *benchmark) ReadinessCheck(ctx context.Context, queries []Query) error {
+	if err := b.db.PingContext(ctx); err != nil {
+		return fmt.Errorf("postgres unreachable: %w", err)
+	}
+
+	var n int
+	err := b.db.QueryRowContext(ctx, `
+		SELECT COUNT(*) FROM information_schema.tables
+		WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+	`).Scan(&n)
+	if err != nil {
+		return fmt.Errorf("check schema: %w", err)
+	}
+	if n == 0 {
+		return fmt.Errorf("no tables in public schema — migrations may have failed")
+	}
+
+	for _, q := range queries {
+		rows, err := b.db.QueryContext(ctx, q.SQL)
+		if err != nil {
+			return fmt.Errorf("query %q failed dry-run: %w", q.Name, err)
+		}
+		if err := drainRows(rows); err != nil {
+			return fmt.Errorf("query %q dry-run: %w", q.Name, err)
+		}
+	}
+
+	return nil
+}
+
 func (b *benchmark) Close() error {
 	return b.db.Close()
 }
