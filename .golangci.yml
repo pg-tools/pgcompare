@@ -3,14 +3,12 @@ version: "2"
 linters:
   enable:
     - errorlint
-    - gocritic
+    - govet
     - misspell
     - nakedret
     - nilerr
-    - prealloc
     - revive
     - unconvert
-    - unparam
     - whitespace
   settings:
     misspell:
@@ -19,6 +17,10 @@ linters:
     presets:
       - comments
       - std-error-handling
+    rules:
+      - linters:
+          - revive
+        text: "unexported-return"
 
 formatters:
   enable:

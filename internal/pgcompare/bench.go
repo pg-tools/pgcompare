@@ -10,8 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 const explainQuery = "EXPLAIN (ANALYZE, FORMAT JSON)"
@@ -240,7 +238,6 @@ func (b *benchmark) Explain(ctx context.Context, queries []Query) ([]*PlanNode, 
 	}
 	plans := make([]*PlanNode, len(queries))
 	for i, q := range queries {
-
 		b.log.Info("Running explain query", "query", q.Name)
 
 		query := explainQuery + " " + q.SQL
