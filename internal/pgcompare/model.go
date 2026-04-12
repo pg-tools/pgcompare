@@ -39,6 +39,8 @@ type BenchResult struct {
 
 type ReportData struct {
 	GeneratedAt time.Time
+	Iterations  int
+	Concurrency int
 	Before      *BenchResult
 	After       *BenchResult
 	Diffs       []PlanDiff

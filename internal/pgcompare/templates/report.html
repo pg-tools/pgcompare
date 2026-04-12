@@ -125,8 +125,8 @@ window.reportData = (function() {
   {{ range .Diffs }}diffs.push({QueryName:{{ .QueryName }},Summary:[{{ range .Summary }}{{ . }},{{ end }}],BeforeText:{{ renderPlan .Before }},AfterText:{{ renderPlan .After }}});
   {{ end }}return {
     GeneratedAt: {{ .GeneratedAt.Format "02.01.2006, 15:04:05" }},
-    Iterations: 0,
-    Concurrency: 0,
+    Iterations: {{ .Iterations }},
+    Concurrency: {{ .Concurrency }},
     Description: {{ .Description }},
     Before: {Phase: {{ .Before.Phase }}, Stats: beforeStats},
     After:  {Phase: {{ .After.Phase }},  Stats: afterStats},
@@ -172,7 +172,10 @@ function buildNavLinks(data) {
 function buildHeader(data) {
   var params = '';
   if (data.Iterations) {
-    params = '<div class="bench-params"><span class="bench-param">iterations: ' + data.Iterations + '</span></div>';
+    params = '<div class="bench-params">'
+      + '<span class="bench-param">iterations: ' + data.Iterations + '</span>'
+      + '<span class="bench-param">concurrency: ' + data.Concurrency + '</span>'
+      + '</div>';
   }
   return '<div class="header">'
     + '<h1>\u041e\u0442\u0447\u0451\u0442 \u043f\u043e \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u0438 PostgreSQL</h1>'
