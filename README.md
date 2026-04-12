@@ -46,7 +46,7 @@ pgcompare --help
 `pgcompare` runs the same benchmark flow twice:
 
 1. Load `pgcompare.yaml` and `.env` from the same project directory.
-2. Prepare the `before` state with one `MIGRATION_VERSION`.
+2. Prepare the `before` state with the configured migration env var.
 3. Benchmark the `before` queries and capture `EXPLAIN ANALYZE` plans.
 4. Recreate the environment for the `after` state.
 5. Benchmark the `after` queries and capture plans again.
@@ -93,7 +93,7 @@ POSTGRES_PORT=5432
 MIGRATION_VERSION=0
 ```
 
-`POSTGRES_PORT` is optional and defaults to `5432`. `MIGRATION_VERSION` is recommended if your project already uses that variable for manual runs. During comparison, `pgcompare` overrides it with the value from `pgcompare.yaml`.
+`POSTGRES_PORT` is optional and defaults to `5432`. If you keep the default migration env var name, use `MIGRATION_VERSION`. If you override it with `migration.env_var`, use the same custom key in `.env`.
 
 ## Configuration
 
@@ -101,6 +101,7 @@ Example `pgcompare.yaml`:
 
 ```yaml
 migration:
+  env_var: MIGRATION_VERSION
   before_version: "3"
   after_version: "5"
 
@@ -131,12 +132,14 @@ Notes on the setup command flags:
 
 How migration switching works:
 
-`pgcompare` does not apply migrations by itself. It runs your `setup.command` twice and overrides `MIGRATION_VERSION`:
+`pgcompare` does not apply migrations by itself. It runs your `setup.command` twice and overrides the migration env var:
 
 - first with `migration.before_version`
 - then with `migration.after_version`
 
-Because of that, your migration workflow must explicitly use `MIGRATION_VERSION`. If your migration script or Docker service ignores that variable, both phases will prepare the same database state.
+By default, the env var name is `MIGRATION_VERSION`. If needed, you can override it with `migration.env_var`.
+
+Because of that, your migration workflow must explicitly use the same env var name. If your migration script or Docker service ignores that variable, both phases will prepare the same database state.
 
 Typical setup:
 
@@ -162,14 +165,17 @@ services:
     command: sh -c "./migrate up --to ${MIGRATION_VERSION}"
 ```
 
+If you use a custom `migration.env_var`, the same name must be used in `.env`, in `docker-compose.yml`, and inside the migration command.
+
 `MIGRATION_VERSION` in `.env` is useful as a default for manual local runs. During `pgcompare run`, it is overridden automatically for the `before` and `after` phases.
 
 Configuration structure:
 
 ### `migration`
 
-- `before_version`: value injected into `MIGRATION_VERSION` for the first phase
-- `after_version`: value injected into `MIGRATION_VERSION` for the second phase
+- `env_var`: optional env var name used for migration switching. Default: `MIGRATION_VERSION`
+- `before_version`: value injected into the migration env var for the first phase
+- `after_version`: value injected into the migration env var for the second phase
 
 These two values define which schema state is compared. They should point to two valid migration states that your project can build successfully.
 

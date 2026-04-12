@@ -22,6 +22,7 @@ type Config struct {
 	ProjectDir string
 
 	Migration struct {
+		EnvVar        string `yaml:"env_var"`
 		BeforeVersion string `yaml:"before_version"`
 		AfterVersion  string `yaml:"after_version"`
 	} `yaml:"migration"`
@@ -67,6 +68,7 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	cfg.ProjectDir = projectDir
+	cfg.Migration.EnvVar = normalizeMigrationEnvVar(cfg.Migration.EnvVar)
 	cfg.DescriptionHTML = buildDescriptionHTML(cfg.Report.Description)
 
 	if err := godotenv.Load(filepath.Join(projectDir, ".env")); err != nil {
@@ -80,6 +82,14 @@ func LoadConfig(configPath string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func normalizeMigrationEnvVar(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return defaultMigrationVersionEnv
+	}
+	return value
 }
 
 func buildDescriptionHTML(entries []descriptionEntry) string {
@@ -118,6 +128,9 @@ func buildDescriptionHTML(entries []descriptionEntry) string {
 }
 
 func (c *Config) validate() error {
+	if c.Migration.EnvVar == "" {
+		return fmt.Errorf("migration.env_var must not be empty")
+	}
 	if c.Migration.BeforeVersion == "" {
 		return fmt.Errorf("migration.before_version is required")
 	}
