@@ -28,7 +28,6 @@ type PlanDiff struct {
 	QueryName string
 	Before    *PlanNode
 	After     *PlanNode
-	Summary   []string
 }
 
 type BenchResult struct {
