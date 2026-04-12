@@ -26,4 +26,4 @@ formatters:
   settings:
     goimports:
       local-prefixes:
-        - github.com/ssokov/pgcompare
+        - github.com/pg-tools/pgcompare
