@@ -45,6 +45,8 @@ func NewBenchmark(log *slog.Logger, dsn string) (*benchmark, error) {
 }
 
 func (b *benchmark) ParseQueries(path string) ([]Query, error) {
+	b.log.Info("Parsing queries", "path", path)
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file: %w", err)
@@ -113,6 +115,8 @@ func (b *benchmark) ParseQueries(path string) ([]Query, error) {
 }
 
 func (b *benchmark) ValidateMatchingQueryNames(beforeQueries, afterQueries []Query) error {
+	b.log.Info("Validating queries", "before", beforeQueries, "after", afterQueries)
+
 	before := make(map[string]struct{}, len(beforeQueries))
 	after := make(map[string]struct{}, len(afterQueries))
 
@@ -149,6 +153,8 @@ func (b *benchmark) ValidateMatchingQueryNames(beforeQueries, afterQueries []Que
 }
 
 func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency uint) ([]Stats, error) {
+	b.log.Info("Running queries", "queries", queries, "iterations", iterations)
+
 	if iterations == 0 {
 		return nil, fmt.Errorf("iterations cannot be zero")
 	}
@@ -169,6 +175,8 @@ func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concur
 }
 
 func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, concurrency uint) (Stats, error) {
+	b.log.Info("Running query", "query", q.Name, "iterations", iterations)
+
 	var (
 		wg        sync.WaitGroup
 		mu        sync.Mutex
@@ -222,11 +230,16 @@ func (b *benchmark) runQueryBenchmark(ctx context.Context, q Query, iterations, 
 }
 
 func (b *benchmark) Explain(ctx context.Context, queries []Query) ([]*PlanNode, error) {
+	b.log.Info("Explaining queries", "queries", queries)
+
 	if len(queries) == 0 {
 		return nil, fmt.Errorf("no queries found")
 	}
 	plans := make([]*PlanNode, len(queries))
 	for i, q := range queries {
+
+		b.log.Info("Running explain query", "query", q.Name)
+
 		query := explainQuery + " " + q.SQL
 		var raw []byte
 		err := b.db.QueryRowContext(ctx, query).Scan(&raw)
@@ -253,6 +266,8 @@ func (b *benchmark) DiffPlans(
 	afterQueries []Query,
 	afterPlans []*PlanNode,
 ) ([]PlanDiff, error) {
+	b.log.Info("Running diff plans", "queries", beforeQueries, "queries", beforePlans)
+
 	if len(beforeQueries) != len(beforePlans) {
 		return nil, fmt.Errorf("before queries/plans mismatch: %d queries, %d plans", len(beforeQueries), len(beforePlans))
 	}
