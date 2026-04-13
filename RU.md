@@ -1,4 +1,11 @@
 # pgcompare
+
+[![Release](https://img.shields.io/github/v/release/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/releases/latest)
+[![Build Status](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
+[![Linter Status](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg?event=push&branch=main)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pg-tools/pgcompare)](https://goreportcard.com/report/github.com/pg-tools/pgcompare)
+[![codecov](https://codecov.io/gh/pg-tools/pgcompare/branch/main/graph/badge.svg)](https://codecov.io/gh/pg-tools/pgcompare)
+
 `pgcompare` — локальный CLI-инструмент для сравнения производительности PostgreSQL-запросов до и после оптимизации с генерацией одного HTML-отчёта.
 
 English version: [README.md](./README.md).
