@@ -37,6 +37,26 @@ Install to a custom directory:
 curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -b /usr/local/bin
 ```
 
+### Windows via PowerShell
+
+Install latest release to `$HOME\.local\bin`:
+
+```powershell
+irm https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.ps1 | iex
+```
+
+Install a specific version:
+
+```powershell
+.\install.ps1 -Version v1.0.1
+```
+
+Install to a custom directory:
+
+```powershell
+.\install.ps1 -BinDir C:\tools
+```
+
 ### Homebrew (macOS)
 
 ```bash

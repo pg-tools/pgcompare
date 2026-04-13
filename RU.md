@@ -37,6 +37,26 @@ curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh 
 curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -b /usr/local/bin
 ```
 
+### Windows через PowerShell
+
+Установить последнюю версию в `$HOME\.local\bin`:
+
+```powershell
+irm https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.ps1 | iex
+```
+
+Установить конкретную версию:
+
+```powershell
+.\install.ps1 -Version v1.0.1
+```
+
+Установить в произвольную директорию:
+
+```powershell
+.\install.ps1 -BinDir C:\tools
+```
+
 ### Homebrew (macOS)
 
 ```bash
