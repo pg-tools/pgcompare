@@ -14,61 +14,23 @@ English version: [README.md](./README.md).
 
 ## Установка
 
-### Ссылка на релизы
-- Последний релиз: https://github.com/pg-tools/pgcompare/releases/latest
-
-### Linux/macOS через install script
-
-Установить последнюю версию в `~/.local/bin`:
-
 ```bash
+# Linux/macOS
 curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh
 ```
 
-Установить конкретную версию:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -v v1.0.1
-```
-
-Установить в произвольную директорию:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh -s -- -b /usr/local/bin
-```
-
-### Windows через PowerShell
-
-Установить последнюю версию в `$HOME\.local\bin`:
-
 ```powershell
+# Windows
 irm https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.ps1 | iex
 ```
 
-Установить конкретную версию:
-
-```powershell
-.\install.ps1 -Version v1.0.1
-```
-
-Установить в произвольную директорию:
-
-```powershell
-.\install.ps1 -BinDir C:\tools
-```
-
-### Homebrew (macOS)
-
 ```bash
+# macOS (Homebrew)
 brew tap pg-tools/tap
 brew install pg-tools/tap/pgcompare
 ```
 
-## Проверка установки
-
-```bash
-pgcompare --help
-```
+Другие варианты (конкретная версия, произвольная директория) описаны в [INSTALL.md](./INSTALL.md).
 
 ## Что делает pgcompare
 
