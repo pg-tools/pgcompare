@@ -13,7 +13,8 @@
 </p>
 
 <p align="center">
-  CLI tool for comparing PostgreSQL query performance before and after optimization.<br>
+  Run your queries before and after any optimization.<br>
+  Get a full HTML report with latency percentiles, QPS, and execution plan diffs.<br><br>
   For Russian documentation, see <a href="./RU.md">RU.md</a>.
 </p>
 
