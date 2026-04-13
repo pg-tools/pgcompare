@@ -1,10 +1,13 @@
 # pgcompare
 
-[![Release](https://img.shields.io/github/v/release/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/releases/latest)
-[![Build Status](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
-[![Linter Status](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg?event=push&branch=main)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/pg-tools/pgcompare)](https://goreportcard.com/report/github.com/pg-tools/pgcompare)
+[![license](https://img.shields.io/github/license/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/blob/main/LICENSE)
+[![release](https://img.shields.io/github/v/release/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/releases/latest)
+[![Go](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
+[![golangci-lint](https://img.shields.io/badge/golangci--lint-passing-brightgreen?logo=github)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
+[![go report](https://goreportcard.com/badge/github.com/pg-tools/pgcompare)](https://goreportcard.com/report/github.com/pg-tools/pgcompare)
 [![codecov](https://codecov.io/gh/pg-tools/pgcompare/branch/main/graph/badge.svg)](https://codecov.io/gh/pg-tools/pgcompare)
+[![Go](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/pg-tools/pgcompare/releases/latest)
 
 `pgcompare` is a local CLI tool for comparing PostgreSQL query performance before and after an optimization and generating a single HTML report.
 
