@@ -1,18 +1,25 @@
-# pgcompare
+<p align="center">
+  <img src="./logo.svg" alt="pgcompare" width="320">
+</p>
 
-[![license](https://img.shields.io/github/license/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/blob/main/LICENSE)
-[![release](https://img.shields.io/github/v/release/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/releases/latest)
-[![Go](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
-[![go report](https://goreportcard.com/badge/github.com/pg-tools/pgcompare)](https://goreportcard.com/report/github.com/pg-tools/pgcompare)
-[![codecov](https://codecov.io/gh/pg-tools/pgcompare/branch/main/graph/badge.svg)](https://codecov.io/gh/pg-tools/pgcompare)
-[![Go](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white)](https://go.dev)
-[![platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)](https://github.com/pg-tools/pgcompare/releases/latest)
+<p align="center">
+  <a href="https://github.com/pg-tools/pgcompare/blob/main/LICENSE"><img src="https://img.shields.io/github/license/pg-tools/pgcompare" alt="license"></a>
+  <a href="https://github.com/pg-tools/pgcompare/releases/latest"><img src="https://img.shields.io/github/v/release/pg-tools/pgcompare" alt="release"></a>
+  <a href="https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml"><img src="https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg" alt="Go"></a>
+  <a href="https://goreportcard.com/report/github.com/pg-tools/pgcompare"><img src="https://goreportcard.com/badge/github.com/pg-tools/pgcompare" alt="go report"></a>
+  <a href="https://codecov.io/gh/pg-tools/pgcompare"><img src="https://codecov.io/gh/pg-tools/pgcompare/branch/main/graph/badge.svg" alt="codecov"></a>
+  <a href="https://go.dev"><img src="https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white" alt="Go"></a>
+  <a href="https://github.com/pg-tools/pgcompare/releases/latest"><img src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey" alt="platform"></a>
+</p>
 
-`pgcompare` — локальный CLI-инструмент для сравнения производительности PostgreSQL-запросов до и после оптимизации с генерацией одного HTML-отчёта.
-
-English version: [README.md](./README.md).
+<p align="center">
+  CLI-инструмент для сравнения производительности PostgreSQL-запросов до и после оптимизации.<br>
+  English version: <a href="./README.md">README.md</a>.
+</p>
 
 ## Установка
+
+Готовые бинарники доступны на странице [Releases](https://github.com/pg-tools/pgcompare/releases/latest). Или установите через скрипт:
 
 ```bash
 # Linux/macOS
