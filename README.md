@@ -3,7 +3,6 @@
 [![license](https://img.shields.io/github/license/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/blob/main/LICENSE)
 [![release](https://img.shields.io/github/v/release/pg-tools/pgcompare)](https://github.com/pg-tools/pgcompare/releases/latest)
 [![Go](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml/badge.svg)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
-[![golangci-lint](https://img.shields.io/badge/golangci--lint-passing-brightgreen?logo=github)](https://github.com/pg-tools/pgcompare/actions/workflows/ci.yml)
 [![go report](https://goreportcard.com/badge/github.com/pg-tools/pgcompare)](https://goreportcard.com/report/github.com/pg-tools/pgcompare)
 [![codecov](https://codecov.io/gh/pg-tools/pgcompare/branch/main/graph/badge.svg)](https://codecov.io/gh/pg-tools/pgcompare)
 [![Go](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white)](https://go.dev)
