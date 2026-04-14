@@ -40,6 +40,32 @@ brew install pg-tools/tap/pgcompare
 
 For more options (custom version, custom directory), see [INSTALL.md](./INSTALL.md).
 
+## Updating
+
+Update to the latest version:
+
+```bash
+# macOS (Homebrew)
+brew update
+brew upgrade pg-tools/tap/pgcompare
+```
+
+```bash
+# Linux/macOS (install script)
+curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.ps1 | iex
+```
+
+Verify installed version:
+
+```bash
+pgcompare --version
+```
+
 ## What pgcompare Does
 
 `pgcompare` runs the same benchmark flow twice:
