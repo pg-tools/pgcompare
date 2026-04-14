@@ -1,0 +1,35 @@
+migration:
+  before_version: "6"
+  after_version: "11"
+
+setup:
+  command: "$DOCKER_COMPOSE up -d postgres && $DOCKER_COMPOSE run --rm -T migrate && $DOCKER_COMPOSE run --rm -T seed"
+
+benchmark:
+  before_queries: "queries_before.sql"
+  after_queries: "queries_after.sql"
+  iterations: 1000
+  concurrency: 1
+
+report:
+  description:
+    - query: top_rated_blocked_drivers
+      what: Добавлен покрывающий индекс idx_drivers_status_rating по status и rating DESC
+      changes: CREATE INDEX idx_drivers_status_rating ON drivers(status, rating DESC) INCLUDE(user_id)
+      expected: Index Only Scan с ранним выходом при LIMIT 10 вместо Seq Scan + Sort по всем заблокированным водителям
+    - query: latest_ride_status
+      what: Добавлен покрывающий индекс idx_ride_status_events_ride_created_id под DISTINCT ON по ride_id
+      changes: CREATE INDEX idx_ride_status_events_ride_created_id ON ride_status_events(ride_id, created_at DESC, id DESC) INCLUDE(to_status)
+      expected: DISTINCT ON использует Index Only Scan без шага Sort вместо Seq Scan + Sort + WindowAgg
+    - query: failed_payments_by_amount
+      what: Добавлен покрывающий индекс idx_payments_status_amount по status и amount DESC
+      changes: CREATE INDEX idx_payments_status_amount ON payments(status, amount DESC) INCLUDE(payment_method_id)
+      expected: Index Only Scan с ранним выходом при LIMIT 100 вместо Seq Scan + Filter + Sort
+    - query: top_final_fare_quotes
+      what: Добавлен покрывающий индекс idx_rfq_kind_amount по kind и amount DESC
+      changes: CREATE INDEX idx_rfq_kind_amount ON ride_fare_quotes(kind, amount DESC) INCLUDE(ride_id)
+      expected: Index Only Scan с ранним выходом при LIMIT 10 вместо Seq Scan + Filter + Sort по 5000 строкам
+    - query: pickup_stops_with_coordinates
+      what: Добавлены индексы idx_ride_stops_pickup_ride и idx_addresses_id_coords для выборки pickup и координат
+      changes: CREATE INDEX idx_ride_stops_pickup_ride ON ride_stops(ride_id) INCLUDE(address_id) WHERE kind='pickup'; CREATE INDEX idx_addresses_id_coords ON addresses(id) INCLUDE(lat, lon)
+      expected: Partial Index Only Scan на ride_stops с ранним выходом при LIMIT 100 вместо Seq Scan 30k строк + Sort; NL join на addresses через Index Only Scan

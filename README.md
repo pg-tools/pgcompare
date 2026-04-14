@@ -258,7 +258,15 @@ Rules:
 
 ## Report Contents
 
-See [example_report.html](./example_report.html) for a complete example of the generated report.
+See [example/report.html](./example/report.html) for a complete example of the generated report.
+
+Files from one real benchmark run are available in [example](./example):
+
+- [example/pgcompare.yaml](./example/pgcompare.yaml)
+- [example/queries_before.sql](./example/queries_before.sql)
+- [example/queries_after.sql](./example/queries_after.sql)
+- [example/docker-compose.yml](./example/docker-compose.yml)
+- [example/report.html](./example/report.html)
 
 The HTML report is designed to answer three practical questions:
 

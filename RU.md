@@ -259,7 +259,15 @@ GROUP BY status;
 
 ## Что есть в отчёте
 
-Готовый пример отчёта: [example_report.html](./example_report.html).
+Готовый пример отчёта: [example/report.html](./example/report.html).
+
+В [example](./example) лежат файлы из одного реального прогона:
+
+- [example/pgcompare.yaml](./example/pgcompare.yaml)
+- [example/queries_before.sql](./example/queries_before.sql)
+- [example/queries_after.sql](./example/queries_after.sql)
+- [example/docker-compose.yml](./example/docker-compose.yml)
+- [example/report.html](./example/report.html)
 
 HTML-отчёт отвечает на три практических вопроса:
 
