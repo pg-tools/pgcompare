@@ -166,11 +166,11 @@
         'P50':       'Медиана. Половина запросов выполнилась быстрее этого значения. Отражает типичное время запроса.',
         'P95':       '95% запросов выполнились быстрее этого значения. Основная метрика оценки оптимизации.',
         'P99':       '99% запросов выполнились быстрее этого значения. Показывает худшие случаи, которые видят пользователей.',
-        'Min':       'Минимальное время выполнения за весь бенчмарк. Обычно соответствует идеальным условиям — все данные в кэше.',
+        'Min':       'Минимальное время выполнения за весь бенчмарк. Обычно соответствует идеальным условиям: все данные в кэше.',
         'Max':       'Максимальное время выполнения. Может быть выбросом из-за блокировки или холодного кэша.',
-        'Mean':      'Среднее арифметическое время выполнения по всем итерациям. Менее надёжно чем P95 — один медленный запрос сдвигает его вверх.',
-        'StdDev':    'Стандартное отклонение от среднего. Низкое значение — запросы стабильны. Высокое — время выполнения непредсказуемо.',
-        'Speedup':   'P95_до / P95_после. Больше 1 — запрос ускорился. Например 2.0 означает что стало в два раза быстрее.',
+        'Mean':      'Среднее арифметическое время выполнения по всем итерациям. Менее надёжно, чем P95: один медленный запрос сдвигает его вверх.',
+        'StdDev':    'Стандартное отклонение от среднего. Низкое значение: запросы стабильны. Высокое: время выполнения непредсказуемо.',
+        'Speedup':   'Отношение P95 до к P95 после. Значение выше 1.0 означает ускорение, ниже 1.0 означает замедление.',
         'QPS':       'Успешных запросов в секунду при заданной конкуренции. Показывает пропускную способность.',
         'ErrorRate': 'Доля упавших запросов во время бенчмарка. В норме должна быть 0%.'
     };
@@ -295,7 +295,15 @@
             + '</tbody></table>';
     }
 
-    function buildPlanDiff(diff) {
+    function renderPlanTrees(diff) {
+        if (!diff) return '';
+        var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
+        var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
+        if (!before && !after) return '';
+        return before + after;
+    }
+
+    function buildPlanDiff(diff, diffIndex) {
         if (!diff) return '';
         var summaryHtml = '';
         if (diff.Summary && diff.Summary.length) {
@@ -304,22 +312,20 @@
                 + '</ul>';
         }
         var planTrees = '';
-        if (diff.BeforeText || diff.AfterText) {
-            var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
-            var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
+        if (diffIndex >= 0 && (diff.BeforeText || diff.AfterText)) {
             planTrees = '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
-                + '<div class="plan-trees">' + before + after + '</div></details>';
+                + '<div class="plan-trees" data-plan-container data-diff-index="' + diffIndex + '"></div></details>';
         }
         if (!summaryHtml && !planTrees) return '';
         return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
     }
 
-    function buildQueryCard(b, a, diff, speedup) {
+    function buildQueryCard(b, a, diff, speedup, diffIndex) {
         var anchor = 'query-' + slugify(b.QueryName);
         return '<div class="card section" id="' + anchor + '" data-section>'
             + '<div class="card-header"><span class="card-query-name">' + esc(b.QueryName) + '</span></div>'
             + '<div class="card-section"><div class="card-section-label">\u0421\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043a\u0430</div>' + buildStatsTable(b, a, speedup) + '</div>'
-            + '<div class="card-section">' + buildPlanDiff(diff) + '</div>'
+            + '<div class="card-section">' + buildPlanDiff(diff, diffIndex) + '</div>'
             + '</div>';
     }
 
@@ -345,51 +351,113 @@
         sections.forEach(function(s) { obs.observe(s); });
     }
 
+    function initLazyPlans(data) {
+        document.addEventListener('toggle', function(e) {
+            var details = e.target;
+            if (!details || details.tagName !== 'DETAILS' || !details.open) return;
+
+            var container = details.querySelector('[data-plan-container]');
+            if (!container || container.dataset.loaded === '1') return;
+
+            var diffIndex = parseInt(container.dataset.diffIndex, 10);
+            if (isNaN(diffIndex) || diffIndex < 0 || diffIndex >= (data.Diffs || []).length) return;
+
+            var diff = data.Diffs[diffIndex];
+            container.innerHTML = renderPlanTrees(diff);
+            container.dataset.loaded = '1';
+        }, true);
+    }
+
     (function() {
         var data = window.reportData;
 
         document.getElementById('nav-links').innerHTML = buildNavLinks(data);
 
+        var diffs = data.Diffs || [];
         var cards = data.Before.Stats.map(function(b, i) {
             var a       = data.After.Stats[i];
-            var diff    = (data.Diffs || []).filter(function(d) { return d.QueryName === b.QueryName; })[0] || null;
+            var diffIndex = -1;
+            for (var d = 0; d < diffs.length; d++) {
+                if (diffs[d].QueryName === b.QueryName) {
+                    diffIndex = d;
+                    break;
+                }
+            }
+            var diff    = diffIndex >= 0 ? diffs[diffIndex] : null;
             var speedup = (data.Speedups || [])[i] || 0;
-            return buildQueryCard(b, a, diff, speedup);
+            return buildQueryCard(b, a, diff, speedup, diffIndex);
         }).join('');
 
         document.getElementById('app').innerHTML =
             buildHeader(data) + buildDescription(data) + buildSummary(data) + cards + buildFooter(data);
 
         setupScrollSpy();
+        initLazyPlans(data);
         initTooltips();
     })();
 
     function initTooltips() {
+        var margin = 8;
         var tip = document.createElement('div');
-        tip.style.cssText = 'position:fixed;z-index:9999;background:#1f2937;color:#f9fafb;font-size:12px;line-height:1.55;padding:8px 12px;border-radius:6px;max-width:240px;pointer-events:none;opacity:0;transition:opacity 0.12s;box-shadow:0 4px 12px rgba(0,0,0,0.25);';
+        tip.style.cssText = 'position:fixed;z-index:9999;background:#1f2937;color:#f9fafb;font-size:12px;line-height:1.55;padding:8px 12px;border-radius:6px;max-width:240px;overflow-wrap:anywhere;word-break:break-word;pointer-events:none;opacity:0;visibility:hidden;transition:opacity 0.12s;box-shadow:0 4px 12px rgba(0,0,0,0.25);';
         document.body.appendChild(tip);
-        document.addEventListener('mouseover', function(e) {
-            var el = e.target;
+
+        function findHintIcon(target) {
+            var el = target;
             while (el && !el.classList.contains('hint-icon')) el = el.parentElement;
+            return el || null;
+        }
+
+        function hideTooltip() {
+            tip.style.opacity = '0';
+            tip.style.visibility = 'hidden';
+        }
+
+        function showTooltip(el, text) {
+            tip.textContent = text;
+            tip.style.left = '0px';
+            tip.style.top = '0px';
+            tip.style.opacity = '0';
+            tip.style.visibility = 'hidden';
+
+            var maxWidth = Math.min(320, window.innerWidth - margin * 2);
+            if (maxWidth < 120) maxWidth = Math.max(80, window.innerWidth - margin * 2);
+            tip.style.maxWidth = maxWidth + 'px';
+
+            var r = el.getBoundingClientRect();
+            var width = tip.offsetWidth;
+            var height = tip.offsetHeight;
+
+            var left = r.left + r.width / 2 - width / 2;
+            if (left < margin) left = margin;
+            if (left + width > window.innerWidth - margin) left = window.innerWidth - width - margin;
+
+            var top = r.top - height - margin;
+            if (top < margin) top = r.bottom + margin;
+            if (top + height > window.innerHeight - margin) top = Math.max(margin, window.innerHeight - height - margin);
+
+            tip.style.left = Math.round(left) + 'px';
+            tip.style.top = Math.round(top) + 'px';
+            tip.style.visibility = 'visible';
+            tip.style.opacity = '1';
+        }
+
+        document.addEventListener('mouseover', function(e) {
+            var el = findHintIcon(e.target);
             if (!el) return;
             var text = el.getAttribute('data-tip');
             if (!text) return;
-            tip.textContent = text;
-            tip.style.opacity = '1';
-            var r = el.getBoundingClientRect();
-            var left = r.left + r.width / 2 - tip.offsetWidth / 2;
-            left = Math.max(8, Math.min(left, window.innerWidth - tip.offsetWidth - 8));
-            var top = r.top - tip.offsetHeight - 8;
-            if (top < 8) top = r.bottom + 8;
-            tip.style.left = left + 'px';
-            tip.style.top = top + 'px';
+            showTooltip(el, text);
         });
+
         document.addEventListener('mouseout', function(e) {
-            var el = e.target;
-            while (el && !el.classList.contains('hint-icon')) el = el.parentElement;
+            var el = findHintIcon(e.target);
             if (!el) return;
-            tip.style.opacity = '0';
+            hideTooltip();
         });
+
+        window.addEventListener('scroll', hideTooltip, true);
+        window.addEventListener('resize', hideTooltip);
     }
 </script>
 </body>
