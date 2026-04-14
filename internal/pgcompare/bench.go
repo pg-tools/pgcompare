@@ -349,6 +349,10 @@ func (b *benchmark) ReadinessCheck(ctx context.Context, queries []Query) error {
 		return fmt.Errorf("no tables in public schema — migrations may have failed")
 	}
 
+	if _, err := b.db.ExecContext(ctx, "ANALYZE"); err != nil {
+		return fmt.Errorf("analyze: %w", err)
+	}
+
 	for _, q := range queries {
 		rows, err := b.db.QueryContext(ctx, q.SQL)
 		if err != nil {
