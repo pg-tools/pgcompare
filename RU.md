@@ -40,6 +40,32 @@ brew install pg-tools/tap/pgcompare
 
 Другие варианты (конкретная версия, произвольная директория) описаны в [INSTALL.md](./INSTALL.md).
 
+## Обновление
+
+Обновить до последней версии:
+
+```bash
+# macOS (Homebrew)
+brew update
+brew upgrade pg-tools/tap/pgcompare
+```
+
+```bash
+# Linux/macOS (install script)
+curl -fsSL https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/pg-tools/pgcompare/main/install.ps1 | iex
+```
+
+Проверить установленную версию:
+
+```bash
+pgcompare --version
+```
+
 ## Что делает pgcompare
 
 `pgcompare` выполняет один и тот же сценарий два раза:
@@ -293,6 +319,18 @@ pgcompare run --config ./pgcompare.yaml --verbose
 
 ```bash
 pgcompare run --help
+```
+
+Посмотреть справку по CLI:
+
+```bash
+pgcompare --help
+```
+
+Проверить установленную версию:
+
+```bash
+pgcompare --version
 ```
 
 ## Примечания

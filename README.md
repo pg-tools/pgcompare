@@ -320,6 +320,18 @@ Show command help:
 pgcompare run --help
 ```
 
+Show root command help:
+
+```bash
+pgcompare --help
+```
+
+Check installed version:
+
+```bash
+pgcompare --version
+```
+
 ## Notes
 
 - The CLI currently connects to PostgreSQL through `localhost`, using credentials from `.env`
