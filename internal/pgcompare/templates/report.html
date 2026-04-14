@@ -103,6 +103,9 @@
     .footer a { color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
     .footer a:hover { color: var(--text); }
     .footer-gh svg { width: 14px; height: 14px; fill: currentColor; }
+    .metric-hint { display: inline-flex; align-items: center; }
+    .hint-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: var(--neutral-bg); border: 1px solid var(--border); color: var(--text-muted); font-size: 9px; font-weight: 700; cursor: default; font-style: normal; flex-shrink: 0; margin-left: 4px; user-select: none; }
+    .hint-icon:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
   </style>
 </head>
 <body>
@@ -158,6 +161,25 @@ function fmtSpeedup(f) {
 }
 
 function badge(d) { return '<span class="badge ' + d.cls + '">' + esc(d.text) + '</span>'; }
+
+var METRIC_HINTS = {
+  'P50':       'Медиана. Половина запросов выполнилась быстрее этого значения. Отражает типичное время запроса.',
+  'P95':       '95% запросов выполнились быстрее этого значения. Основная метрика оценки оптимизации.',
+  'P99':       '99% запросов выполнились быстрее этого значения. Показывает худшие случаи, которые видят пользователей.',
+  'Min':       'Минимальное время выполнения за весь бенчмарк. Обычно соответствует идеальным условиям — все данные в кэше.',
+  'Max':       'Максимальное время выполнения. Может быть выбросом из-за блокировки или холодного кэша.',
+  'Mean':      'Среднее арифметическое время выполнения по всем итерациям. Менее надёжно чем P95 — один медленный запрос сдвигает его вверх.',
+  'StdDev':    'Стандартное отклонение от среднего. Низкое значение — запросы стабильны. Высокое — время выполнения непредсказуемо.',
+  'Speedup':   'P95_до / P95_после. Больше 1 — запрос ускорился. Например 2.0 означает что стало в два раза быстрее.',
+  'QPS':       'Успешных запросов в секунду при заданной конкуренции. Показывает пропускную способность.',
+  'ErrorRate': 'Доля упавших запросов во время бенчмарка. В норме должна быть 0%.'
+};
+
+function hintIcon(name) {
+  var tip = METRIC_HINTS[name];
+  if (!tip) return '';
+  return '<i class="hint-icon" data-tip="' + esc(tip) + '">i</i>';
+}
 
 function buildNavLinks(data) {
   var links = [
@@ -244,7 +266,7 @@ function buildSummary(data) {
 function buildStatsRow(name, bVal, aVal, fmt, higher) {
   var d = calcDelta(bVal, aVal, higher);
   return '<tr>'
-    + '<td class="metric-name">' + name + '</td>'
+    + '<td class="metric-name"><span class="metric-hint">' + name + hintIcon(name) + '</span></td>'
     + '<td style="color:var(--text-muted)">' + fmt(bVal) + '</td>'
     + '<td>' + fmt(aVal) + '</td>'
     + '<td>' + badge(d) + '</td></tr>';
@@ -266,7 +288,7 @@ function buildStatsTable(b, a, speedup) {
     + buildStatsRow('Max',  b.Max,  a.Max,  fmtMs, false)
     + buildStatsRow('Mean', b.Mean, a.Mean, fmtMs, false)
     + stddevRow
-    + '<tr><td class="metric-name">Speedup</td><td style="color:var(--text-muted)">\u2014</td><td>\u2014</td><td>' + badge(speedup) + '</td></tr>'
+    + '<tr><td class="metric-name"><span class="metric-hint">Speedup' + hintIcon('Speedup') + '</span></td><td style="color:var(--text-muted)">\u2014</td><td>\u2014</td><td>' + badge(speedup) + '</td></tr>'
     + '<tr class="group-sep"><td colspan="4">Throughput &amp; Reliability</td></tr>'
     + buildStatsRow('QPS',       b.QPS,       a.QPS,       fmtQPS, true)
     + buildStatsRow('ErrorRate', b.ErrorRate, a.ErrorRate, fmtErr, false)
@@ -339,7 +361,36 @@ function setupScrollSpy() {
     buildHeader(data) + buildDescription(data) + buildSummary(data) + cards + buildFooter(data);
 
   setupScrollSpy();
+  initTooltips();
 })();
+
+function initTooltips() {
+  var tip = document.createElement('div');
+  tip.style.cssText = 'position:fixed;z-index:9999;background:#1f2937;color:#f9fafb;font-size:12px;line-height:1.55;padding:8px 12px;border-radius:6px;max-width:240px;pointer-events:none;opacity:0;transition:opacity 0.12s;box-shadow:0 4px 12px rgba(0,0,0,0.25);';
+  document.body.appendChild(tip);
+  document.addEventListener('mouseover', function(e) {
+    var el = e.target;
+    while (el && !el.classList.contains('hint-icon')) el = el.parentElement;
+    if (!el) return;
+    var text = el.getAttribute('data-tip');
+    if (!text) return;
+    tip.textContent = text;
+    tip.style.opacity = '1';
+    var r = el.getBoundingClientRect();
+    var left = r.left + r.width / 2 - tip.offsetWidth / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - tip.offsetWidth - 8));
+    var top = r.top - tip.offsetHeight - 8;
+    if (top < 8) top = r.bottom + 8;
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+  });
+  document.addEventListener('mouseout', function(e) {
+    var el = e.target;
+    while (el && !el.classList.contains('hint-icon')) el = el.parentElement;
+    if (!el) return;
+    tip.style.opacity = '0';
+  });
+}
 </script>
 </body>
 </html>
