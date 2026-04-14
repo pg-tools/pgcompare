@@ -1,10 +1,13 @@
-.PHONY: build test lint fmt cover clean
+.PHONY: build test test-integration lint fmt cover clean
 
 build:
 	go build -o pgcompare .
 
 test:
 	go test ./...
+
+test-integration:
+	go test -tags=integration ./tests/...
 
 lint:
 	golangci-lint run
