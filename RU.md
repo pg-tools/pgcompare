@@ -261,7 +261,7 @@ GROUP BY status;
 
 Готовый пример отчёта: [example/report.html](./example/report.html).
 
-В [example](./example) лежат файлы из одного реального прогона:
+В папке [example](./example) собраны файлы одного реального запуска:
 
 - [example/pgcompare.yaml](./example/pgcompare.yaml)
 - [example/queries_before.sql](./example/queries_before.sql)
