@@ -1,7 +1,9 @@
 .PHONY: build test test-integration lint fmt cover clean
 
+VERSION ?= dev
+
 build:
-	go build -o pgcompare .
+	go build -ldflags "-X main.Version=$(VERSION)" -o pgcompare .
 
 test:
 	go test ./...

@@ -14,6 +14,8 @@ import (
 	"github.com/pg-tools/pgcompare/internal/pgcompare"
 )
 
+var Version = "dev"
+
 var (
 	flagConfig  string
 	flagOut     string
@@ -27,8 +29,9 @@ func main() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "pgcompare",
-	Short: "PostgreSQL query performance comparison tool",
+	Use:     "pgcompare",
+	Short:   "PostgreSQL query performance comparison tool",
+	Version: Version,
 }
 
 var runCmd = &cobra.Command{
