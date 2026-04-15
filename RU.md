@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.svg" alt="pgcompare" width="320">
+  <img src="logo-white.svg" alt="pgcompare" width="320">
 </p>
 
 <p align="center">
@@ -72,9 +72,9 @@ pgcompare --version
 
 1. Читает `pgcompare.yaml` и `.env` из одной директории проекта.
 2. Подготавливает состояние `before` через настроенную переменную версии миграций.
-3. Прогоняет `before`-запросы и снимает планы `EXPLAIN ANALYZE`.
+3. Прогревает `before`-запросы, запускает измеряемый бенчмарк и снимает планы `EXPLAIN ANALYZE`.
 4. Пересоздаёт окружение для состояния `after`.
-5. Прогоняет `after`-запросы и снова снимает планы.
+5. Прогревает `after`-запросы, запускает измеряемый бенчмарк и снова снимает планы `EXPLAIN ANALYZE`.
 6. Генерирует один HTML-отчёт со сравнением.
 
 Инструмент подходит для оценки эффекта от:
@@ -137,6 +137,7 @@ setup:
 benchmark:
   before_queries: queries_before.sql
   after_queries: queries_after.sql
+  warmup_iterations: 5
   iterations: 100
   concurrency: 4
 
@@ -215,10 +216,12 @@ services:
 
 - `before_queries`: SQL-файл для фазы `before`
 - `after_queries`: SQL-файл для фазы `after`
+- `warmup_iterations`: необязательное число неучитываемых запусков перед измерением каждого запроса. Рекомендуется ставить небольшое положительное значение, например `3`–`5`
 - `iterations`: общее число выполнений каждого запроса
 - `concurrency`: число параллельных воркеров для бенчмарка
 
 Пути к SQL-файлам считаются относительно директории, в которой лежит `pgcompare.yaml`.
+Для более стабильного измерения steady-state лучше задавать `warmup_iterations` как небольшое положительное значение, а не оставлять первый холодный запуск внутри измеряемой выборки.
 
 ### `report`
 

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.svg" alt="pgcompare" width="320">
+  <img src="logo-white.svg" alt="pgcompare" width="320">
 </p>
 
 <p align="center">
@@ -72,9 +72,9 @@ pgcompare --version
 
 1. Load `pgcompare.yaml` and `.env` from the same project directory.
 2. Prepare the `before` state with the configured migration env var.
-3. Benchmark the `before` queries and capture `EXPLAIN ANALYZE` plans.
+3. Warm up the `before` queries, run the measured benchmark, and capture `EXPLAIN ANALYZE` plans.
 4. Recreate the environment for the `after` state.
-5. Benchmark the `after` queries and capture plans again.
+5. Warm up the `after` queries, run the measured benchmark, and capture plans again.
 6. Generate one HTML comparison report.
 
 This is intended for comparing the effect of:
@@ -136,6 +136,7 @@ setup:
 benchmark:
   before_queries: queries_before.sql
   after_queries: queries_after.sql
+  warmup_iterations: 5
   iterations: 100
   concurrency: 4
 
@@ -214,10 +215,12 @@ This command is responsible for preparing the database completely. In most proje
 
 - `before_queries`: SQL file used for the `before` phase
 - `after_queries`: SQL file used for the `after` phase
+- `warmup_iterations`: optional number of unreported executions run before each measured query. Recommended: a small positive value such as `3` to `5`
 - `iterations`: total number of executions per query
 - `concurrency`: number of parallel workers used for each benchmark
 
 The query file paths are resolved relative to the directory that contains `pgcompare.yaml`.
+For steadier hot-path measurements, prefer setting `warmup_iterations` to a small positive value instead of leaving the first cold execution inside the measured sample.
 
 ### `report`
 
