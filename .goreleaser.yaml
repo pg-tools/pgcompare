@@ -44,10 +44,4 @@ brews:
     directory: Formula
 
 changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
-      - "^ci:"
-      - Merge pull request
+  use: github-native
