@@ -366,6 +366,7 @@ setup:
 benchmark:
   before_queries: queries_before.sql
   after_queries: queries_after.sql
+  warmup_iterations: 1
   iterations: 3
   concurrency: 1
 

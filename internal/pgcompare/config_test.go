@@ -74,6 +74,13 @@ func TestConfigValidate(t *testing.T) {
 			},
 			wantErr: "benchmark.concurrency",
 		},
+		{
+			name: "warmup negative",
+			mutate: func(cfg *Config) {
+				cfg.Benchmark.WarmupIterations = -1
+			},
+			wantErr: "benchmark.warmup_iterations",
+		},
 	}
 
 	for _, tt := range tests {
@@ -145,6 +152,7 @@ func TestLoadConfig(t *testing.T) {
 		assert.Equal(t, tmpDir, cfg.ProjectDir)
 		assert.Equal(t, "1", cfg.Migration.BeforeVersion)
 		assert.Equal(t, "2", cfg.Migration.AfterVersion)
+		assert.Equal(t, 2, cfg.Benchmark.WarmupIterations)
 		assert.Equal(t, "postgres://u:p@localhost:9999/d", cfg.DSN)
 		require.Len(t, cfg.Report.Description, 1)
 		assert.Equal(t, "q1", cfg.Report.Description[0].Query)
@@ -225,6 +233,7 @@ func validConfigForTest() Config {
 	cfg.Setup.Command = "echo setup"
 	cfg.Benchmark.BeforeQueries = "before.sql"
 	cfg.Benchmark.AfterQueries = "after.sql"
+	cfg.Benchmark.WarmupIterations = 0
 	cfg.Benchmark.Iterations = 10
 	cfg.Benchmark.Concurrency = 2
 	return cfg
@@ -240,6 +249,7 @@ setup:
 benchmark:
   before_queries: "before.sql"
   after_queries: "after.sql"
+  warmup_iterations: 2
   iterations: 10
   concurrency: 2
 report:
