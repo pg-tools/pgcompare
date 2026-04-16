@@ -162,10 +162,11 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 	}
 
 	data := pgcompare.ReportData{
-		GeneratedAt: time.Now(),
-		Iterations:  cfg.Benchmark.Iterations,
-		Concurrency: cfg.Benchmark.Concurrency,
-		Speedups:    speedups,
+		GeneratedAt:      time.Now(),
+		Iterations:       cfg.Benchmark.Iterations,
+		WarmupIterations: cfg.Benchmark.WarmupIterations,
+		Concurrency:      cfg.Benchmark.Concurrency,
+		Speedups:         speedups,
 		Before: &pgcompare.BenchResult{
 			Phase: "before",
 			Stats: beforeStats,
