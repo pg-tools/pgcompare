@@ -108,7 +108,13 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Fprintln(os.Stderr, "Benchmarking 'before'...")
-	beforeStats, err := bench.Run(ctx, beforeQueries, uint(cfg.Benchmark.Iterations), uint(cfg.Benchmark.Concurrency))
+	beforeStats, err := bench.Run(
+		ctx,
+		beforeQueries,
+		uint(cfg.Benchmark.Iterations),
+		uint(cfg.Benchmark.Concurrency),
+		uint(cfg.Benchmark.WarmupIterations),
+	)
 	if err != nil {
 		return fmt.Errorf("bench before: %w", err)
 	}
@@ -127,7 +133,13 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Fprintln(os.Stderr, "Benchmarking 'after'...")
-	afterStats, err := bench.Run(ctx, afterQueries, uint(cfg.Benchmark.Iterations), uint(cfg.Benchmark.Concurrency))
+	afterStats, err := bench.Run(
+		ctx,
+		afterQueries,
+		uint(cfg.Benchmark.Iterations),
+		uint(cfg.Benchmark.Concurrency),
+		uint(cfg.Benchmark.WarmupIterations),
+	)
 	if err != nil {
 		return fmt.Errorf("bench after: %w", err)
 	}

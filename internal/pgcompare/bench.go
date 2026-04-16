@@ -46,6 +46,26 @@ func NewBenchmark(log *slog.Logger, dsn string) (*benchmark, error) {
 	}, nil
 }
 
+func (b *benchmark) Warmup(ctx context.Context, q Query, iterations, concurrency uint) error {
+	if iterations == 0 {
+		return nil
+	}
+	if concurrency == 0 {
+		return fmt.Errorf("warmup concurrency cannot be zero")
+	}
+
+	b.log.Info("Running warmup", "query", q.Name, "iterations", iterations, "concurrency", concurrency)
+	stats, err := b.runQueryBenchmark(ctx, q, iterations, concurrency)
+	if err != nil {
+		return fmt.Errorf("warmup %q failed: %w", q.Name, err)
+	}
+	if len(stats.Errors) > 0 {
+		return fmt.Errorf("warmup %q failed: %s", q.Name, strings.Join(stats.Errors, "; "))
+	}
+
+	return nil
+}
+
 func (b *benchmark) ParseQueries(path string) ([]Query, error) {
 	b.log.Info("Parsing queries", "path", path)
 
@@ -154,8 +174,8 @@ func (b *benchmark) ValidateMatchingQueryNames(beforeQueries, afterQueries []Que
 	return nil
 }
 
-func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency uint) ([]Stats, error) {
-	b.log.Info("Running queries", "queries", queries, "iterations", iterations)
+func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency, warmupIterations uint) ([]Stats, error) {
+	b.log.Info("Running queries", "queries", queries, "iterations", iterations, "warmup_iterations", warmupIterations)
 
 	if iterations == 0 {
 		return nil, fmt.Errorf("iterations cannot be zero")
@@ -166,6 +186,10 @@ func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concur
 
 	stats := make([]Stats, len(queries))
 	for i, q := range queries {
+		if err := b.Warmup(ctx, q, warmupIterations, concurrency); err != nil {
+			return nil, err
+		}
+
 		stat, err := b.runQueryBenchmark(ctx, q, iterations, concurrency)
 		if err != nil {
 			return nil, fmt.Errorf("benchmark query %q: %w", q.Name, err)

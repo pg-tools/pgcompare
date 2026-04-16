@@ -1,6 +1,7 @@
 package pgcompare
 
 import (
+	"context"
 	"io"
 	"log/slog"
 	"os"
@@ -270,6 +271,16 @@ func TestPercentile(t *testing.T) {
 			assert.Equal(t, tt.want, percentile(tt.values, tt.p))
 		})
 	}
+}
+
+func TestWarmupValidation(t *testing.T) {
+	bench := &benchmark{log: newTestLogger()}
+
+	require.NoError(t, bench.Warmup(context.Background(), Query{Name: "q1", SQL: "SELECT 1"}, 0, 1))
+
+	err := bench.Warmup(context.Background(), Query{Name: "q1", SQL: "SELECT 1"}, 1, 0)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "warmup concurrency cannot be zero")
 }
 
 func TestSummarizePlanDiff(t *testing.T) {

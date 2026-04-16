@@ -31,10 +31,11 @@ type Config struct {
 	} `yaml:"setup"`
 
 	Benchmark struct {
-		BeforeQueries string `yaml:"before_queries"`
-		AfterQueries  string `yaml:"after_queries"`
-		Iterations    int    `yaml:"iterations"`
-		Concurrency   int    `yaml:"concurrency"`
+		BeforeQueries    string `yaml:"before_queries"`
+		AfterQueries     string `yaml:"after_queries"`
+		WarmupIterations int    `yaml:"warmup_iterations" default:"0"`
+		Iterations       int    `yaml:"iterations"`
+		Concurrency      int    `yaml:"concurrency"`
 	} `yaml:"benchmark"`
 
 	Report struct {
@@ -104,6 +105,9 @@ func (c *Config) validate() error {
 	}
 	if c.Benchmark.AfterQueries == "" {
 		return fmt.Errorf("benchmark.after_queries is required")
+	}
+	if c.Benchmark.WarmupIterations < 0 {
+		return fmt.Errorf("benchmark.warmup_iterations must be non-negative")
 	}
 	if c.Benchmark.Iterations <= 0 {
 		return fmt.Errorf("benchmark.iterations must be positive")
