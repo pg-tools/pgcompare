@@ -118,27 +118,27 @@
 <div class="main" id="app"></div>
 
 <script>
-
+     
     window.reportData = (function() {
         var beforeStats = [];
-        beforeStats.push({QueryName:"top_rated_blocked_drivers",Min: 551 ,Max: 3265 ,P50: 615 ,P95: 655 ,P99: 706 ,Mean: 620 ,StdDev: 102 ,QPS: 1610.8825866537077 ,ErrorRate: 0 });
-        beforeStats.push({QueryName:"latest_ride_status",Min: 2358 ,Max: 8039 ,P50: 2807 ,P95: 5006 ,P99: 5874 ,Mean: 3139 ,StdDev: 806 ,QPS: 318.5184770969601 ,ErrorRate: 0 });
-        beforeStats.push({QueryName:"failed_payments_by_amount",Min: 1289 ,Max: 3522 ,P50: 1386 ,P95: 1452 ,P99: 1555 ,Mean: 1396 ,StdDev: 103 ,QPS: 715.7374045866391 ,ErrorRate: 0 });
-        beforeStats.push({QueryName:"top_final_fare_quotes",Min: 1322 ,Max: 2672 ,P50: 1406 ,P95: 1460 ,P99: 1560 ,Mean: 1412 ,StdDev: 72 ,QPS: 708.044638133265 ,ErrorRate: 0 });
-        beforeStats.push({QueryName:"pickup_stops_with_coordinates",Min: 270 ,Max: 3885 ,P50: 367 ,P95: 400 ,P99: 1080 ,Mean: 368 ,StdDev: 181 ,QPS: 2713.9171732507434 ,ErrorRate: 0 });
+        beforeStats.push({QueryName:"top_rated_blocked_drivers",Min: 549 ,Max: 6672 ,P50: 615 ,P95: 695 ,P99: 996 ,Mean: 640 ,StdDev: 251 ,QPS: 1561.6662971269682 ,ErrorRate: 0 });
+        beforeStats.push({QueryName:"latest_ride_status",Min: 2408 ,Max: 7770 ,P50: 2914 ,P95: 5089 ,P99: 6293 ,Mean: 3238 ,StdDev: 829 ,QPS: 308.7508560121342 ,ErrorRate: 0 });
+        beforeStats.push({QueryName:"failed_payments_by_amount",Min: 1295 ,Max: 2995 ,P50: 1394 ,P95: 1508 ,P99: 1940 ,Mean: 1412 ,StdDev: 120 ,QPS: 707.9192653672029 ,ErrorRate: 0 });
+        beforeStats.push({QueryName:"top_final_fare_quotes",Min: 1330 ,Max: 2509 ,P50: 1432 ,P95: 1512 ,P99: 1605 ,Mean: 1439 ,StdDev: 57 ,QPS: 694.4478805146866 ,ErrorRate: 0 });
+        beforeStats.push({QueryName:"pickup_stops_with_coordinates",Min: 260 ,Max: 2435 ,P50: 305 ,P95: 341 ,P99: 613 ,Mean: 317 ,StdDev: 107 ,QPS: 3148.460130811655 ,ErrorRate: 0 });
         var afterStats = [];
-        afterStats.push({QueryName:"top_rated_blocked_drivers",Min: 87 ,Max: 769 ,P50: 119 ,P95: 146 ,P99: 161 ,Mean: 123 ,StdDev: 26 ,QPS: 8099.969827612392 ,ErrorRate: 0 });
-        afterStats.push({QueryName:"latest_ride_status",Min: 2476 ,Max: 4868 ,P50: 2628 ,P95: 2773 ,P99: 3255 ,Mean: 2651 ,StdDev: 137 ,QPS: 377.0821771263186 ,ErrorRate: 0 });
-        afterStats.push({QueryName:"failed_payments_by_amount",Min: 154 ,Max: 284 ,P50: 193 ,P95: 213 ,P99: 227 ,Mean: 192 ,StdDev: 14 ,QPS: 5188.093230574915 ,ErrorRate: 0 });
-        afterStats.push({QueryName:"top_final_fare_quotes",Min: 95 ,Max: 162 ,P50: 114 ,P95: 130 ,P99: 141 ,Mean: 116 ,StdDev: 7 ,QPS: 8586.734376387429 ,ErrorRate: 0 });
-        afterStats.push({QueryName:"pickup_stops_with_coordinates",Min: 164 ,Max: 273 ,P50: 188 ,P95: 205 ,P99: 217 ,Mean: 189 ,StdDev: 10 ,QPS: 5287.127364915548 ,ErrorRate: 0 });
+        afterStats.push({QueryName:"top_rated_blocked_drivers",Min: 100 ,Max: 259 ,P50: 124 ,P95: 157 ,P99: 186 ,Mean: 127 ,StdDev: 16 ,QPS: 7807.168131120951 ,ErrorRate: 0 });
+        afterStats.push({QueryName:"latest_ride_status",Min: 2512 ,Max: 5229 ,P50: 2677 ,P95: 3009 ,P99: 3272 ,Mean: 2719 ,StdDev: 176 ,QPS: 367.7598542861905 ,ErrorRate: 0 });
+        afterStats.push({QueryName:"failed_payments_by_amount",Min: 156 ,Max: 1695 ,P50: 199 ,P95: 272 ,P99: 751 ,Mean: 217 ,StdDev: 112 ,QPS: 4591.693251307876 ,ErrorRate: 0 });
+        afterStats.push({QueryName:"top_final_fare_quotes",Min: 80 ,Max: 275 ,P50: 117 ,P95: 136 ,P99: 154 ,Mean: 117 ,StdDev: 13 ,QPS: 8482.049028262112 ,ErrorRate: 0 });
+        afterStats.push({QueryName:"pickup_stops_with_coordinates",Min: 151 ,Max: 505 ,P50: 188 ,P95: 210 ,P99: 235 ,Mean: 190 ,StdDev: 16 ,QPS: 5259.237686645415 ,ErrorRate: 0 });
         var diffs = [];
-        diffs.push({QueryName:"top_rated_blocked_drivers",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Merge Join -\u003e Index Scan on drivers","Index added: idx_drivers_status_rating","Actual rows changed: 294 -\u003e 10",],BeforeText:"-\u003e Limit (rows=10 time=619µs)\n  -\u003e Sort (rows=10 time=618µs)\n    -\u003e Merge Join (rows=294 time=595µs)\n      -\u003e Index Scan on users using users_pkey (rows=4999 time=255µs)\n      -\u003e Sort (rows=294 time=193µs)\n        -\u003e Seq Scan on drivers (rows=294 time=168µs)\n",AfterText:"-\u003e Limit (rows=10 time=40µs)\n  -\u003e Nested Loop (rows=10 time=39µs)\n    -\u003e Index Scan on drivers using idx_drivers_status_rating (rows=10 time=9µs)\n    -\u003e Index Scan on users using users_pkey (rows=1 time=3µs)\n"});
-        diffs.push({QueryName:"latest_ride_status",Summary:["Unique -\u003e Result","Sort -\u003e Unique","Explicit Sort removed","Seq Scan -\u003e Index Only Scan on ride_status_events","Index added: idx_ride_status_events_ride_created_id",],BeforeText:"-\u003e Unique (rows=10000 time=1.492ms)\n  -\u003e Sort (rows=10000 time=1.044ms)\n    -\u003e Seq Scan on ride_status_events (rows=10000 time=440µs)\n",AfterText:"-\u003e Result (rows=10000 time=1.745ms)\n  -\u003e Unique (rows=10000 time=1.334ms)\n    -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_created_id (rows=10000 time=742µs)\n"});
-        diffs.push({QueryName:"failed_payments_by_amount",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Merge Join -\u003e Index Scan on payments","Index added: idx_payments_status_amount","Actual rows changed: 2000 -\u003e 100",],BeforeText:"-\u003e Limit (rows=100 time=1.569ms)\n  -\u003e Sort (rows=100 time=1.566ms)\n    -\u003e Merge Join (rows=2000 time=1.404ms)\n      -\u003e Index Scan on payment_methods using payment_methods_pkey (rows=10001 time=516µs)\n      -\u003e Sort (rows=2000 time=470µs)\n        -\u003e Seq Scan on payments (rows=2000 time=342µs)\n",AfterText:"-\u003e Limit (rows=100 time=139µs)\n  -\u003e Nested Loop (rows=100 time=136µs)\n    -\u003e Index Scan on payments using idx_payments_status_amount (rows=100 time=48µs)\n    -\u003e Index Scan on payment_methods using payment_methods_pkey (rows=1 time=1µs)\n"});
-        diffs.push({QueryName:"top_final_fare_quotes",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Hash Join -\u003e Index Only Scan on ride_fare_quotes","Index added: idx_rfq_kind_amount","Actual rows changed: 5000 -\u003e 10",],BeforeText:"-\u003e Limit (rows=10 time=1.727ms)\n  -\u003e Sort (rows=10 time=1.726ms)\n    -\u003e Hash Join (rows=5000 time=1.46ms)\n      -\u003e Seq Scan on ride_fare_quotes (rows=5000 time=333µs)\n      -\u003e Hash (rows=10000 time=780µs)\n        -\u003e Seq Scan on rides (rows=10000 time=391µs)\n",AfterText:"-\u003e Limit (rows=10 time=15µs)\n  -\u003e Nested Loop (rows=10 time=15µs)\n    -\u003e Index Only Scan on ride_fare_quotes using idx_rfq_kind_amount (rows=10 time=7µs)\n    -\u003e Index Scan on rides using rides_pkey (rows=1 time=1µs)\n"});
-        diffs.push({QueryName:"pickup_stops_with_coordinates",Summary:["Index Scan -\u003e Index Only Scan on ride_stops","Index changed: uq_ride_stops_ride_stop_index -\u003e idx_ride_stops_pickup_ride",],BeforeText:"-\u003e Limit (rows=100 time=58µs)\n  -\u003e Nested Loop (rows=100 time=54µs)\n    -\u003e Index Scan on ride_stops using uq_ride_stops_ride_stop_index (rows=100 time=15µs)\n    -\u003e Index Scan on addresses using addresses_pkey (rows=1 time=0s)\n",AfterText:"-\u003e Limit (rows=100 time=53µs)\n  -\u003e Nested Loop (rows=100 time=50µs)\n    -\u003e Index Only Scan on ride_stops using idx_ride_stops_pickup_ride (rows=100 time=9µs)\n    -\u003e Index Scan on addresses using addresses_pkey (rows=1 time=0s)\n"});
-        var speedups = [ 4.473412172773082 , 1.804947592393777 , 6.801805387132871 , 11.216575815738963 , 1.9523213633597079 ,];
+        diffs.push({QueryName:"top_rated_blocked_drivers",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Merge Join -\u003e Index Scan on drivers","Index added: idx_drivers_status_rating","Actual rows changed: 294 -\u003e 10",],BeforeText:"-\u003e Limit (rows=10 time=731µs)\n  -\u003e Sort (rows=10 time=731µs)\n    -\u003e Merge Join (rows=294 time=704µs)\n      -\u003e Index Scan on users using users_pkey (rows=4999 time=283µs)\n      -\u003e Sort (rows=294 time=277µs)\n        -\u003e Seq Scan on drivers (rows=294 time=250µs)\n",AfterText:"-\u003e Limit (rows=10 time=24µs)\n  -\u003e Nested Loop (rows=10 time=24µs)\n    -\u003e Index Scan on drivers using idx_drivers_status_rating (rows=10 time=9µs)\n    -\u003e Index Scan on users using users_pkey (rows=1 time=1µs)\n"});
+        diffs.push({QueryName:"latest_ride_status",Summary:["Unique -\u003e Result","Sort -\u003e Unique","Explicit Sort removed","Seq Scan -\u003e Index Only Scan on ride_status_events","Index added: idx_ride_status_events_ride_created_id",],BeforeText:"-\u003e Unique (rows=10000 time=1.523ms)\n  -\u003e Sort (rows=10000 time=1.065ms)\n    -\u003e Seq Scan on ride_status_events (rows=10000 time=457µs)\n",AfterText:"-\u003e Result (rows=10000 time=1.8ms)\n  -\u003e Unique (rows=10000 time=1.349ms)\n    -\u003e Index Only Scan on ride_status_events using idx_ride_status_events_ride_created_id (rows=10000 time=743µs)\n"});
+        diffs.push({QueryName:"failed_payments_by_amount",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Merge Join -\u003e Index Scan on payments","Index added: idx_payments_status_amount","Actual rows changed: 2000 -\u003e 100",],BeforeText:"-\u003e Limit (rows=100 time=1.623ms)\n  -\u003e Sort (rows=100 time=1.619ms)\n    -\u003e Merge Join (rows=2000 time=1.45ms)\n      -\u003e Index Scan on payment_methods using payment_methods_pkey (rows=10001 time=525µs)\n      -\u003e Sort (rows=2000 time=476µs)\n        -\u003e Seq Scan on payments (rows=2000 time=347µs)\n",AfterText:"-\u003e Limit (rows=100 time=150µs)\n  -\u003e Nested Loop (rows=100 time=147µs)\n    -\u003e Index Scan on payments using idx_payments_status_amount (rows=100 time=52µs)\n    -\u003e Index Scan on payment_methods using payment_methods_pkey (rows=1 time=1µs)\n"});
+        diffs.push({QueryName:"top_final_fare_quotes",Summary:["Sort -\u003e Nested Loop","Explicit Sort removed","Hash Join -\u003e Index Only Scan on ride_fare_quotes","Index added: idx_rfq_kind_amount","Actual rows changed: 5000 -\u003e 10",],BeforeText:"-\u003e Limit (rows=10 time=1.806ms)\n  -\u003e Sort (rows=10 time=1.806ms)\n    -\u003e Hash Join (rows=5000 time=1.532ms)\n      -\u003e Seq Scan on ride_fare_quotes (rows=5000 time=353µs)\n      -\u003e Hash (rows=10000 time=805µs)\n        -\u003e Seq Scan on rides (rows=10000 time=404µs)\n",AfterText:"-\u003e Limit (rows=10 time=16µs)\n  -\u003e Nested Loop (rows=10 time=15µs)\n    -\u003e Index Only Scan on ride_fare_quotes using idx_rfq_kind_amount (rows=10 time=7µs)\n    -\u003e Index Scan on rides using rides_pkey (rows=1 time=1µs)\n"});
+        diffs.push({QueryName:"pickup_stops_with_coordinates",Summary:["Index Scan -\u003e Index Only Scan on ride_stops","Index changed: uq_ride_stops_ride_stop_index -\u003e idx_ride_stops_pickup_ride",],BeforeText:"-\u003e Limit (rows=100 time=57µs)\n  -\u003e Nested Loop (rows=100 time=54µs)\n    -\u003e Index Scan on ride_stops using uq_ride_stops_ride_stop_index (rows=100 time=16µs)\n    -\u003e Index Scan on addresses using addresses_pkey (rows=1 time=0s)\n",AfterText:"-\u003e Limit (rows=100 time=49µs)\n  -\u003e Nested Loop (rows=100 time=46µs)\n    -\u003e Index Only Scan on ride_stops using idx_ride_stops_pickup_ride (rows=100 time=8µs)\n    -\u003e Index Scan on addresses using addresses_pkey (rows=1 time=0s)\n"});
+        var speedups = [ 4.421473574457534 , 1.6912832696461206 , 5.531711574284583 , 11.087384051329057 , 1.6215895610913404 ,];
         var description = [];
         description.push({Query:"top_rated_blocked_drivers",What:"Добавлен покрывающий индекс idx_drivers_status_rating по status и rating DESC",Changes:"\"CREATE INDEX idx_drivers_status_rating ON drivers(status, rating DESC) INCLUDE(user_id)\"",Expected:"Index Only Scan с ранним выходом при LIMIT 10 вместо Seq Scan \u002b Sort по всем заблокированным водителям"});
         description.push({Query:"latest_ride_status",What:"Добавлен покрывающий индекс idx_ride_status_events_ride_created_id под DISTINCT ON по ride_id",Changes:"\"CREATE INDEX idx_ride_status_events_ride_created_id ON ride_status_events(ride_id, created_at DESC, id DESC) INCLUDE(to_status)\"",Expected:"DISTINCT ON использует Index Only Scan без шага Sort вместо Seq Scan \u002b Sort \u002b WindowAgg"});
@@ -146,8 +146,9 @@
         description.push({Query:"top_final_fare_quotes",What:"Добавлен покрывающий индекс idx_rfq_kind_amount по kind и amount DESC",Changes:"\"CREATE INDEX idx_rfq_kind_amount ON ride_fare_quotes(kind, amount DESC) INCLUDE(ride_id)\"",Expected:"Index Only Scan с ранним выходом при LIMIT 10 вместо Seq Scan \u002b Filter \u002b Sort по 5000 строкам"});
         description.push({Query:"pickup_stops_with_coordinates",What:"Добавлены индексы idx_ride_stops_pickup_ride и idx_addresses_id_coords для выборки pickup и координат",Changes:"\"CREATE INDEX idx_ride_stops_pickup_ride ON ride_stops(ride_id) INCLUDE(address_id) WHERE kind='pickup'; CREATE INDEX idx_addresses_id_coords ON addresses(id) INCLUDE(lat, lon)\"",Expected:"Partial Index Only Scan на ride_stops с ранним выходом при LIMIT 100 вместо Seq Scan 30k строк \u002b Sort; NL join на addresses через Index Only Scan"});
         return {
-            GeneratedAt: "16.04.2026, 13:37:22",
+            GeneratedAt: "16.04.2026, 14:10:05",
             Iterations:  1000 ,
+            WarmupIterations:  5 ,
             Concurrency:  1 ,
             Speedups: speedups,
             Description: description,
@@ -191,10 +192,23 @@
         'ErrorRate': 'Доля упавших запросов во время бенчмарка. В норме должна быть 0%.'
     };
 
+    var BENCH_PARAM_HINTS = {
+        'iterations': 'Количество измеряемых выполнений каждого запроса в фазах before/after.',
+        'warmup iterations': 'Количество предварительных прогонов перед замером каждого запроса.',
+        'concurrency': 'Количество конкурентных воркеров, выполняющих запросы во время измерений.'
+    };
+
+    function hintIconFromText(text) {
+        if (!text) return '';
+        return '<i class="hint-icon" data-tip="' + esc(text) + '">i</i>';
+    }
+
     function hintIcon(name) {
-        var tip = METRIC_HINTS[name];
-        if (!tip) return '';
-        return '<i class="hint-icon" data-tip="' + esc(tip) + '">i</i>';
+        return hintIconFromText(METRIC_HINTS[name]);
+    }
+
+    function buildBenchParam(name, value) {
+        return '<span class="bench-param">' + esc(name) + ': ' + value + hintIconFromText(BENCH_PARAM_HINTS[name]) + '</span>';
     }
 
     function buildNavLinks(data) {
@@ -213,8 +227,9 @@
         var params = '';
         if (data.Iterations) {
             params = '<div class="bench-params">'
-                + '<span class="bench-param">iterations: ' + data.Iterations + '</span>'
-                + '<span class="bench-param">concurrency: ' + data.Concurrency + '</span>'
+                + buildBenchParam('iterations', data.Iterations)
+                + buildBenchParam('warmup iterations', data.WarmupIterations)
+                + buildBenchParam('concurrency', data.Concurrency)
                 + '</div>';
         }
         return '<div class="header">'

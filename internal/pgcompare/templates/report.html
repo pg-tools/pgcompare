@@ -132,13 +132,14 @@
         {{ end }}return {
             GeneratedAt: "{{ .GeneratedAt.Format "02.01.2006, 15:04:05" }}",
             Iterations: {{ .Iterations }},
-        Concurrency: {{ .Concurrency }},
-        Speedups: speedups,
+            WarmupIterations: {{ .WarmupIterations }},
+            Concurrency: {{ .Concurrency }},
+            Speedups: speedups,
             Description: description,
             Before: {Phase: "{{ .Before.Phase }}", Stats: beforeStats},
-        After:  {Phase: "{{ .After.Phase }}",  Stats: afterStats},
-        Diffs:  diffs
-    };
+            After:  {Phase: "{{ .After.Phase }}",  Stats: afterStats},
+            Diffs:  diffs
+        };
     })();
 
     var slugify = function(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); };
@@ -175,10 +176,23 @@
         'ErrorRate': 'Доля упавших запросов во время бенчмарка. В норме должна быть 0%.'
     };
 
+    var BENCH_PARAM_HINTS = {
+        'iterations': 'Количество измеряемых выполнений каждого запроса в фазах before/after.',
+        'warmup iterations': 'Количество предварительных прогонов перед замером каждого запроса.',
+        'concurrency': 'Количество конкурентных воркеров, выполняющих запросы во время измерений.'
+    };
+
+    function hintIconFromText(text) {
+        if (!text) return '';
+        return '<i class="hint-icon" data-tip="' + esc(text) + '">i</i>';
+    }
+
     function hintIcon(name) {
-        var tip = METRIC_HINTS[name];
-        if (!tip) return '';
-        return '<i class="hint-icon" data-tip="' + esc(tip) + '">i</i>';
+        return hintIconFromText(METRIC_HINTS[name]);
+    }
+
+    function buildBenchParam(name, value) {
+        return '<span class="bench-param">' + esc(name) + ': ' + value + hintIconFromText(BENCH_PARAM_HINTS[name]) + '</span>';
     }
 
     function buildNavLinks(data) {
@@ -197,8 +211,9 @@
         var params = '';
         if (data.Iterations) {
             params = '<div class="bench-params">'
-                + '<span class="bench-param">iterations: ' + data.Iterations + '</span>'
-                + '<span class="bench-param">concurrency: ' + data.Concurrency + '</span>'
+                + buildBenchParam('iterations', data.Iterations)
+                + buildBenchParam('warmup iterations', data.WarmupIterations)
+                + buildBenchParam('concurrency', data.Concurrency)
                 + '</div>';
         }
         return '<div class="header">'

@@ -38,12 +38,13 @@ type BenchResult struct {
 }
 
 type ReportData struct {
-	GeneratedAt time.Time
-	Iterations  int
-	Concurrency int
-	Speedups    []float64
-	Before      *BenchResult
-	After       *BenchResult
-	Diffs       []PlanDiff
-	Description []DescriptionEntry
+	GeneratedAt      time.Time
+	Iterations       int
+	WarmupIterations int
+	Concurrency      int
+	Speedups         []float64
+	Before           *BenchResult
+	After            *BenchResult
+	Diffs            []PlanDiff
+	Description      []DescriptionEntry
 }
