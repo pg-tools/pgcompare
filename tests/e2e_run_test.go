@@ -72,8 +72,8 @@ func TestRunCommandE2E(t *testing.T) {
 	assert.Contains(t, html, "find_active_users")
 	assert.Contains(t, html, "idx_users_active_created_at")
 	assert.Contains(t, html, "QueryName:\"find_active_users\"")
-	assert.Contains(t, html, "WarmupIterations: 1")
-	assert.Contains(t, html, "warmup iterations:")
+	assert.Regexp(t, regexp.MustCompile(`WarmupIterations:\s*1`), html)
+	assert.Contains(t, html, "buildBenchParam('warmup iterations', data.WarmupIterations)")
 	assert.Contains(t, html, "Add an index for active users ordered by creation date.")
 	assert.Contains(t, html, "The ordered lookup should use the new index.")
 
