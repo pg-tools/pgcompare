@@ -9,6 +9,7 @@ benchmark:
   before_queries: "queries_before.sql"
   after_queries: "queries_after.sql"
   iterations: 1000
+  warmup_iterations: 5
   concurrency: 1
 
 report:
