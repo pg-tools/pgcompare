@@ -174,6 +174,86 @@ func (b *benchmark) ValidateMatchingQueryNames(beforeQueries, afterQueries []Que
 	return nil
 }
 
+func (b *benchmark) RunRepeats(ctx context.Context, queries []Query, repeats, iterations, concurrency, warmupIterations uint) ([]Stats, error) {
+	if repeats == 0 {
+		repeats = 1
+	}
+	samples := make([][]Stats, repeats)
+	for r := uint(0); r < repeats; r++ {
+		b.log.Info("Running repeat", "repeat", r+1, "total", repeats)
+		s, err := b.Run(ctx, queries, iterations, concurrency, warmupIterations)
+		if err != nil {
+			return nil, fmt.Errorf("repeat %d: %w", r+1, err)
+		}
+		samples[r] = s
+	}
+	return aggregateRepeatStats(queries, samples), nil
+}
+
+func aggregateRepeatStats(queries []Query, samples [][]Stats) []Stats {
+	out := make([]Stats, len(queries))
+	for qi, q := range queries {
+		durs := map[string][]time.Duration{
+			"Min": nil, "Max": nil, "P50": nil, "P95": nil, "P99": nil, "Mean": nil, "StdDev": nil,
+		}
+		var qps, errRate []float64
+		var errs []string
+		for _, rep := range samples {
+			s := rep[qi]
+			durs["Min"] = append(durs["Min"], s.Min)
+			durs["Max"] = append(durs["Max"], s.Max)
+			durs["P50"] = append(durs["P50"], s.P50)
+			durs["P95"] = append(durs["P95"], s.P95)
+			durs["P99"] = append(durs["P99"], s.P99)
+			durs["Mean"] = append(durs["Mean"], s.Mean)
+			durs["StdDev"] = append(durs["StdDev"], s.StdDev)
+			qps = append(qps, s.QPS)
+			errRate = append(errRate, s.ErrorRate)
+			errs = append(errs, s.Errors...)
+		}
+		out[qi] = Stats{
+			QueryName: q.Name,
+			Min:       medianDuration(durs["Min"]),
+			Max:       medianDuration(durs["Max"]),
+			P50:       medianDuration(durs["P50"]),
+			P95:       medianDuration(durs["P95"]),
+			P99:       medianDuration(durs["P99"]),
+			Mean:      medianDuration(durs["Mean"]),
+			StdDev:    medianDuration(durs["StdDev"]),
+			QPS:       medianFloat64(qps),
+			ErrorRate: medianFloat64(errRate),
+			Errors:    errs,
+		}
+	}
+	return out
+}
+
+func medianDuration(values []time.Duration) time.Duration {
+	if len(values) == 0 {
+		return 0
+	}
+	cp := append([]time.Duration(nil), values...)
+	sort.Slice(cp, func(i, j int) bool { return cp[i] < cp[j] })
+	n := len(cp)
+	if n%2 == 1 {
+		return cp[n/2]
+	}
+	return (cp[n/2-1] + cp[n/2]) / 2
+}
+
+func medianFloat64(values []float64) float64 {
+	if len(values) == 0 {
+		return 0
+	}
+	cp := append([]float64(nil), values...)
+	sort.Float64s(cp)
+	n := len(cp)
+	if n%2 == 1 {
+		return cp[n/2]
+	}
+	return (cp[n/2-1] + cp[n/2]) / 2
+}
+
 func (b *benchmark) Run(ctx context.Context, queries []Query, iterations, concurrency, warmupIterations uint) ([]Stats, error) {
 	b.log.Info("Running queries", "queries", queries, "iterations", iterations, "warmup_iterations", warmupIterations)
 

@@ -42,6 +42,7 @@ type ReportData struct {
 	Iterations       int
 	WarmupIterations int
 	Concurrency      int
+	Repeats          int
 	Speedups         []float64
 	Before           *BenchResult
 	After            *BenchResult

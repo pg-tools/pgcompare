@@ -11,6 +11,7 @@ benchmark:
   warmup_iterations: 5
   iterations: 1000
   concurrency: 1
+  repeats: 3
 
 report:
   description:
