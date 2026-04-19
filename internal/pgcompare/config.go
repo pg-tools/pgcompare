@@ -36,6 +36,7 @@ type Config struct {
 		WarmupIterations int    `yaml:"warmup_iterations" default:"0"`
 		Iterations       int    `yaml:"iterations"`
 		Concurrency      int    `yaml:"concurrency"`
+		Repeats          int    `yaml:"repeats"`
 	} `yaml:"benchmark"`
 
 	Report struct {
@@ -65,6 +66,9 @@ func LoadConfig(configPath string) (*Config, error) {
 
 	cfg.ProjectDir = projectDir
 	cfg.Migration.EnvVar = normalizeMigrationEnvVar(cfg.Migration.EnvVar)
+	if cfg.Benchmark.Repeats == 0 {
+		cfg.Benchmark.Repeats = 1
+	}
 
 	if err := godotenv.Load(filepath.Join(projectDir, ".env")); err != nil {
 		return nil, fmt.Errorf("load .env: %w", err)
@@ -114,6 +118,9 @@ func (c *Config) validate() error {
 	}
 	if c.Benchmark.Concurrency <= 0 {
 		return fmt.Errorf("benchmark.concurrency must be positive")
+	}
+	if c.Benchmark.Repeats <= 0 {
+		return fmt.Errorf("benchmark.repeats must be positive")
 	}
 	return nil
 }

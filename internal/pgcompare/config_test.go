@@ -236,6 +236,7 @@ func validConfigForTest() Config {
 	cfg.Benchmark.WarmupIterations = 0
 	cfg.Benchmark.Iterations = 10
 	cfg.Benchmark.Concurrency = 2
+	cfg.Benchmark.Repeats = 1
 	return cfg
 }
 

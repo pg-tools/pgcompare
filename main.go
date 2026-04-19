@@ -108,9 +108,10 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Fprintln(os.Stderr, "Benchmarking 'before'...")
-	beforeStats, err := bench.Run(
+	beforeStats, err := bench.RunRepeats(
 		ctx,
 		beforeQueries,
+		uint(cfg.Benchmark.Repeats),
 		uint(cfg.Benchmark.Iterations),
 		uint(cfg.Benchmark.Concurrency),
 		uint(cfg.Benchmark.WarmupIterations),
@@ -133,9 +134,10 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 	}
 
 	fmt.Fprintln(os.Stderr, "Benchmarking 'after'...")
-	afterStats, err := bench.Run(
+	afterStats, err := bench.RunRepeats(
 		ctx,
 		afterQueries,
+		uint(cfg.Benchmark.Repeats),
 		uint(cfg.Benchmark.Iterations),
 		uint(cfg.Benchmark.Concurrency),
 		uint(cfg.Benchmark.WarmupIterations),
@@ -166,6 +168,7 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		Iterations:       cfg.Benchmark.Iterations,
 		WarmupIterations: cfg.Benchmark.WarmupIterations,
 		Concurrency:      cfg.Benchmark.Concurrency,
+		Repeats:          cfg.Benchmark.Repeats,
 		Speedups:         speedups,
 		Before: &pgcompare.BenchResult{
 			Phase: "before",

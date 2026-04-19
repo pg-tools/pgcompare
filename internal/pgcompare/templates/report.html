@@ -134,6 +134,7 @@
             Iterations: {{ .Iterations }},
             WarmupIterations: {{ .WarmupIterations }},
             Concurrency: {{ .Concurrency }},
+            Repeats: {{ .Repeats }},
             Speedups: speedups,
             Description: description,
             Before: {Phase: "{{ .Before.Phase }}", Stats: beforeStats},
@@ -179,7 +180,8 @@
     var BENCH_PARAM_HINTS = {
         'iterations': 'Количество измеряемых выполнений каждого запроса в фазах before/after.',
         'warmup iterations': 'Количество предварительных прогонов перед замером каждого запроса.',
-        'concurrency': 'Количество конкурентных воркеров, выполняющих запросы во время измерений.'
+        'concurrency': 'Количество конкурентных воркеров, выполняющих запросы во время измерений.',
+        'repeats': 'Количество независимых повторов бенчмарка на фазу. Метрики агрегируются по медиане, что гасит случайные выбросы между прогонами.'
     };
 
     function hintIconFromText(text) {
@@ -214,6 +216,7 @@
                 + buildBenchParam('iterations', data.Iterations)
                 + buildBenchParam('warmup iterations', data.WarmupIterations)
                 + buildBenchParam('concurrency', data.Concurrency)
+                + (data.Repeats && data.Repeats > 1 ? buildBenchParam('repeats', data.Repeats) : '')
                 + '</div>';
         }
         return '<div class="header">'
