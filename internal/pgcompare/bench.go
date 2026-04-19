@@ -453,8 +453,11 @@ func (b *benchmark) ReadinessCheck(ctx context.Context, queries []Query) error {
 		return fmt.Errorf("no tables in public schema — migrations may have failed")
 	}
 
-	if _, err := b.db.ExecContext(ctx, "ANALYZE"); err != nil {
-		return fmt.Errorf("analyze: %w", err)
+	if _, err := b.db.ExecContext(ctx, "VACUUM (ANALYZE)"); err != nil {
+		return fmt.Errorf("vacuum analyze: %w", err)
+	}
+	if _, err := b.db.ExecContext(ctx, "CHECKPOINT"); err != nil {
+		return fmt.Errorf("checkpoint: %w", err)
 	}
 
 	for _, q := range queries {

@@ -474,8 +474,8 @@
             hideTooltip();
         });
 
-        window.addEventListener('scroll', hideTooltip, true);
-        window.addEventListener('resize', hideTooltip);
+        window.addEventListener('scroll', hideTooltip, { passive: true, capture: true });
+        window.addEventListener('resize', hideTooltip, { passive: true });
     }
 </script>
 </body>
