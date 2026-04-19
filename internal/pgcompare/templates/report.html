@@ -158,8 +158,10 @@
     }
 
     function fmtSpeedup(f) {
-        if (!f || f < 1.05) return { text: '1.0\u00d7', cls: 'badge-neutral' };
-        return { text: f.toFixed(1) + '\u00d7', cls: 'badge-speedup' };
+        if (!f) return { text: '1.0\u00d7', cls: 'badge-neutral' };
+        if (f >= 1.05) return { text: f.toFixed(1) + '\u00d7', cls: 'badge-speedup' };
+        if (f <= 0.95) return { text: f.toFixed(1) + '\u00d7', cls: 'badge-bad' };
+        return { text: '1.0\u00d7', cls: 'badge-neutral' };
     }
 
     function badge(d) { return '<span class="badge ' + d.cls + '">' + esc(d.text) + '</span>'; }
