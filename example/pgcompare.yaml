@@ -8,10 +8,10 @@ setup:
 benchmark:
   before_queries: "queries_before.sql"
   after_queries: "queries_after.sql"
-  warmup_iterations: 5
   iterations: 1000
+  warmup_iterations: 500
   concurrency: 1
-  repeats: 3
+  repeats: 5
 
 report:
   description:
