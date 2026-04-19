@@ -98,16 +98,25 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		}
 	}()
 
+	startAll := time.Now()
+	printHeader("pgcompare")
+
+	benchLabel := fmt.Sprintf("(%d repeat × %d iter × %d worker)",
+		cfg.Benchmark.Repeats, cfg.Benchmark.Iterations, cfg.Benchmark.Concurrency)
+
 	// Phase: before
-	fmt.Fprintln(os.Stderr, "Preparing 'before' environment...")
+	p := startPhase("Preparing 'before' environment")
 	if err := docker.PrepareVersion(ctx, cfg.Migration.BeforeVersion); err != nil {
+		p.Fail(err)
 		return fmt.Errorf("prepare before: %w", err)
 	}
 	if err := bench.ReadinessCheck(ctx, beforeQueries); err != nil {
+		p.Fail(err)
 		return fmt.Errorf("before readiness: %w", err)
 	}
+	p.Done()
 
-	fmt.Fprintln(os.Stderr, "Benchmarking 'before'...")
+	p = startPhase("Benchmarking 'before' " + benchLabel)
 	beforeStats, err := bench.RunRepeats(
 		ctx,
 		beforeQueries,
@@ -117,23 +126,29 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		uint(cfg.Benchmark.WarmupIterations),
 	)
 	if err != nil {
+		p.Fail(err)
 		return fmt.Errorf("bench before: %w", err)
 	}
 	beforePlans, err := bench.Explain(ctx, beforeQueries)
 	if err != nil {
+		p.Fail(err)
 		return fmt.Errorf("explain before: %w", err)
 	}
+	p.Done()
 
 	// Phase: after
-	fmt.Fprintln(os.Stderr, "Preparing 'after' environment...")
+	p = startPhase("Preparing 'after' environment")
 	if err := docker.PrepareVersion(ctx, cfg.Migration.AfterVersion); err != nil {
+		p.Fail(err)
 		return fmt.Errorf("prepare after: %w", err)
 	}
 	if err := bench.ReadinessCheck(ctx, afterQueries); err != nil {
+		p.Fail(err)
 		return fmt.Errorf("after readiness: %w", err)
 	}
+	p.Done()
 
-	fmt.Fprintln(os.Stderr, "Benchmarking 'after'...")
+	p = startPhase("Benchmarking 'after' " + benchLabel)
 	afterStats, err := bench.RunRepeats(
 		ctx,
 		afterQueries,
@@ -143,12 +158,15 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		uint(cfg.Benchmark.WarmupIterations),
 	)
 	if err != nil {
+		p.Fail(err)
 		return fmt.Errorf("bench after: %w", err)
 	}
 	afterPlans, err := bench.Explain(ctx, afterQueries)
 	if err != nil {
+		p.Fail(err)
 		return fmt.Errorf("explain after: %w", err)
 	}
+	p.Done()
 
 	// Analyze
 	diffs, err := bench.DiffPlans(beforeQueries, beforePlans, afterQueries, afterPlans)
@@ -184,11 +202,14 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		Description: cfg.Report.Description,
 	}
 
-	fmt.Fprintln(os.Stderr, "Generating report...")
+	p = startPhase("Generating report")
 	if err := pgcompare.Generate(data, outPath); err != nil {
+		p.Fail(err)
 		return fmt.Errorf("generate report: %w", err)
 	}
+	p.Done()
 
+	printSummary(data, outPath, time.Since(startAll))
 	fmt.Println(outPath)
 	return nil
 }
