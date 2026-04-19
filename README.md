@@ -211,7 +211,9 @@ These two values define which schema state is compared. They should point to two
 
 This command is responsible for preparing the database completely. In most projects it starts containers, applies migrations, and optionally seeds data. It should exit with status `0` only when PostgreSQL is actually ready for benchmark queries.
 
-`setup.command` is any shell command. For complex setup (materialized view refreshes, post-seed `ANALYZE`, multiple steps with conditional logic) point it to a script: `command: "./scripts/pgcompare-setup.sh"`.
+`setup.command` is any shell command. For complex setup (materialized view refreshes, multiple steps with conditional logic, custom post-processing), point it to a script: `command: "./scripts/pgcompare-setup.sh"`.
+
+`pgcompare` already runs `VACUUM (ANALYZE)` in `ReadinessCheck`, so post-seed `ANALYZE` in setup is usually unnecessary.
 
 ### `benchmark`
 
