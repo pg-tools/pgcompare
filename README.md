@@ -223,6 +223,11 @@ This command is responsible for preparing the database completely. In most proje
 The query file paths are resolved relative to the directory that contains `pgcompare.yaml`.
 For steadier hot-path measurements, prefer setting `warmup_iterations` to a small positive value instead of leaving the first cold execution inside the measured sample.
 
+Recommended profiles:
+
+- Smoke test: `iterations: 100`, `warmup_iterations: 5`, `repeats: 1`, `concurrency: 1`
+- Full benchmark: `iterations: 1000`, `warmup_iterations: 500`, `repeats: 5`, `concurrency: 1`
+
 ### `report`
 
 - `description`: optional list rendered at the top of the report
