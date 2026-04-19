@@ -218,6 +218,7 @@ This command is responsible for preparing the database completely. In most proje
 - `warmup_iterations`: optional number of unreported executions run before each measured query. Recommended: a small positive value such as `3` to `5`
 - `iterations`: total number of executions per query
 - `concurrency`: number of parallel workers used for each benchmark
+- `repeats`: optional number of independent benchmark passes per phase. Metrics are aggregated by median across repeats, which dampens random outliers between runs. Default: `1`
 
 The query file paths are resolved relative to the directory that contains `pgcompare.yaml`.
 For steadier hot-path measurements, prefer setting `warmup_iterations` to a small positive value instead of leaving the first cold execution inside the measured sample.
@@ -312,6 +313,29 @@ pgcompare run --config ./pgcompare.yaml
 ```
 
 By default, the report is written to `report.html` next to the config file.
+
+During the run, pgcompare prints progress markers for each phase and a summary table at the end:
+
+```text
+▶ Preparing 'before' environment
+  ... (docker / migrate / seed output) ...
+✓ Preparing 'before' environment              [14.2s]
+
+▶ Benchmarking 'before' (3 repeat × 1000 iter × 1 worker)
+✓ Benchmarking 'before'                       [68.4s]
+
+...
+
+━━━ Summary ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Query                            Before P95  After P95  Speedup
+  top_rated_blocked_drivers             580µs      136µs   4.3×  ✓
+  latest_ride_status                    3.3ms      3.3ms   1.0×  ~
+  failed_payments_by_amount             1.4ms      214µs   6.3×  ✓
+
+  Total: 160.7s · Report: /path/to/report.html
+```
+
+Markers: `✓` speedup ≥ 1.1×, `~` speedup 0.9–1.1× (no meaningful change), `✗` speedup < 0.9× (regression). The final line in stdout is the report path, so it is safe to capture via `$(pgcompare run ...)` in scripts.
 
 Write the report to a custom path:
 
