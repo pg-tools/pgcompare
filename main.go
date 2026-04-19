@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -23,7 +26,12 @@ var (
 )
 
 func main() {
-	if err := rootCmd.Execute(); err != nil {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
+		if errors.Is(err, context.Canceled) {
+			os.Exit(130)
+		}
 		os.Exit(1)
 	}
 }
@@ -48,7 +56,7 @@ func init() {
 	rootCmd.AddCommand(runCmd)
 }
 
-func runBenchmark(_ *cobra.Command, _ []string) error {
+func runBenchmark(cmd *cobra.Command, _ []string) error {
 	logLevel := slog.LevelWarn
 	if flagVerbose {
 		logLevel = slog.LevelInfo
@@ -91,9 +99,11 @@ func runBenchmark(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("create docker comparator: %w", err)
 	}
 
-	ctx := context.Background()
+	ctx := cmd.Context()
 	defer func() {
-		if err := docker.Cleanup(ctx); err != nil {
+		cleanupCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if err := docker.Cleanup(cleanupCtx); err != nil {
 			log.Error("final cleanup failed", "err", err)
 		}
 	}()
