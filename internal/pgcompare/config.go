@@ -2,6 +2,7 @@ package pgcompare
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -130,11 +131,11 @@ func buildDSN() string {
 	if port == "" {
 		port = "5432"
 	}
-	return fmt.Sprintf(
-		"postgres://%s:%s@localhost:%s/%s",
-		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
-		port,
-		os.Getenv("POSTGRES_DB"),
-	)
+	u := url.URL{
+		Scheme: "postgres",
+		User:   url.UserPassword(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD")),
+		Host:   "localhost:" + port,
+		Path:   "/" + os.Getenv("POSTGRES_DB"),
+	}
+	return u.String()
 }
