@@ -79,3 +79,44 @@ func TestFmtSpeedupMarksRegressions(t *testing.T) {
 		body,
 		"old single-branch logic must be removed so regressions are no longer shown as neutral 1.0×")
 }
+
+func TestReportPlanTreesUseSharedScroller(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "report.html")
+
+	err := Generate(ReportData{
+		GeneratedAt: time.Now(),
+		Before: &BenchResult{
+			Phase: "before",
+			Stats: []Stats{{QueryName: "q1"}},
+		},
+		After: &BenchResult{
+			Phase: "after",
+			Stats: []Stats{{QueryName: "q1"}},
+		},
+		Diffs: []PlanDiff{
+			{
+				QueryName: "q1",
+				Before:    &PlanNode{NodeType: "Seq Scan"},
+				After:     &PlanNode{NodeType: "Index Scan", IndexName: "idx_users"},
+			},
+		},
+	}, out)
+	require.NoError(t, err)
+
+	html, err := os.ReadFile(out)
+	require.NoError(t, err)
+
+	body := string(html)
+
+	assert.Contains(t, body, ".plan-scroll { margin-top: 14px; overflow-x: auto;",
+		"plan trees should have one shared horizontal scrollbar")
+	assert.Contains(t, body, ".plan-box { background: var(--code-bg); border-radius: 6px; padding: 14px; overflow: visible; }",
+		"individual plan boxes must not create competing horizontal scrollbars")
+	assert.Contains(t, body, "return '<div class=\"plan-scroll\"><div class=\"plan-trees\">' + before + after + '</div></div>';",
+		"both plans should render inside the same scroll container")
+	assert.Contains(t, body, "<div data-plan-container data-diff-index",
+		"lazy container should be replaced by the shared scroller on open")
+	assert.NotContains(t, body, "<div class=\"plan-trees\" data-plan-container",
+		"the lazy container itself must not be the grid because renderPlanTrees now owns the grid wrapper")
+}
