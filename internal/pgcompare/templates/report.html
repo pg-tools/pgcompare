@@ -91,14 +91,16 @@
         summary::before { content: '\25B6'; font-size: 9px; transition: transform 0.18s ease; display: inline-block; }
         details[open] summary::before { transform: rotate(90deg); }
         summary:hover { color: var(--text); }
-        .plan-trees { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-        @media (max-width: 640px) { .plan-trees { grid-template-columns: 1fr; } }
+        .plan-scroll { margin-top: 14px; overflow-x: auto; overflow-y: hidden; padding-bottom: 4px; scrollbar-gutter: stable; }
+        .plan-trees { display: grid; grid-template-columns: repeat(2, minmax(320px, max-content)); gap: 14px; min-width: max-content; }
+        .plan-column { min-width: 0; }
+        @media (max-width: 640px) { .plan-trees { grid-template-columns: minmax(320px, max-content); } }
         .plan-tree-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-light); margin-bottom: 8px; }
         .plan-summary { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 5px; }
         .plan-summary li { display: flex; align-items: baseline; gap: 8px; font-size: 13px; color: var(--text); }
         .plan-summary li::before { content: '\2192'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
-        .plan-box { background: var(--code-bg); border-radius: 6px; padding: 14px; overflow-x: auto; }
-        .plan-box pre { margin: 0; color: var(--code-text); font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace; font-size: 12px; line-height: 1.8; white-space: pre; }
+        .plan-box { background: var(--code-bg); border-radius: 6px; padding: 14px; overflow: visible; }
+        .plan-box pre { margin: 0; min-width: max-content; color: var(--code-text); font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace; font-size: 12px; line-height: 1.8; white-space: pre; }
         .footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--text-light); }
         .footer a { color: var(--text-muted); text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
         .footer a:hover { color: var(--text); }
@@ -317,10 +319,10 @@
 
     function renderPlanTrees(diff) {
         if (!diff) return '';
-        var before = diff.BeforeText ? '<div><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
-        var after  = diff.AfterText  ? '<div><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
+        var before = diff.BeforeText ? '<div class="plan-column"><div class="plan-tree-label">Before</div><div class="plan-box"><pre>' + esc(diff.BeforeText) + '</pre></div></div>' : '';
+        var after  = diff.AfterText  ? '<div class="plan-column"><div class="plan-tree-label">After</div><div class="plan-box"><pre>'  + esc(diff.AfterText)  + '</pre></div></div>' : '';
         if (!before && !after) return '';
-        return before + after;
+        return '<div class="plan-scroll"><div class="plan-trees">' + before + after + '</div></div>';
     }
 
     function buildPlanDiff(diff, diffIndex) {
@@ -334,7 +336,7 @@
         var planTrees = '';
         if (diffIndex >= 0 && (diff.BeforeText || diff.AfterText)) {
             planTrees = '<details><summary>\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c \u043f\u043b\u0430\u043d\u044b \u0437\u0430\u043f\u0440\u043e\u0441\u043e\u0432</summary>'
-                + '<div class="plan-trees" data-plan-container data-diff-index="' + diffIndex + '"></div></details>';
+                + '<div data-plan-container data-diff-index="' + diffIndex + '"></div></details>';
         }
         if (!summaryHtml && !planTrees) return '';
         return '<div class="card-section-label">Query Plan</div>' + summaryHtml + planTrees;
