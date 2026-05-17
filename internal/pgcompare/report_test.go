@@ -1,6 +1,7 @@
 package pgcompare
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
@@ -119,4 +120,64 @@ func TestReportPlanTreesUseSharedScroller(t *testing.T) {
 		"lazy container should be replaced by the shared scroller on open")
 	assert.NotContains(t, body, "<div class=\"plan-trees\" data-plan-container",
 		"the lazy container itself must not be the grid because renderPlanTrees now owns the grid wrapper")
+}
+
+func TestGenerateJSON(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "report.json")
+
+	data := ReportData{
+		GeneratedAt: time.Now(),
+		Iterations:  10,
+		Speedups:    []float64{1.5},
+		Before: &BenchResult{
+			Phase: "before",
+			Stats: []Stats{{QueryName: "q1", P95: 2 * time.Millisecond}},
+			Plans: []*PlanNode{{NodeType: "Seq Scan"}},
+		},
+		After: &BenchResult{
+			Phase: "after",
+			Stats: []Stats{{QueryName: "q1", P95: 1 * time.Millisecond}},
+			Plans: []*PlanNode{{NodeType: "Index Scan", IndexName: "idx_q1"}},
+		},
+		Diffs: []PlanDiff{
+			{
+				QueryName: "q1",
+				Before:    &PlanNode{NodeType: "Seq Scan"},
+				After:     &PlanNode{NodeType: "Index Scan", IndexName: "idx_q1"},
+			},
+		},
+	}
+
+	require.NoError(t, GenerateJSON(data, out))
+
+	raw, err := os.ReadFile(out)
+	require.NoError(t, err)
+
+	var parsed map[string]any
+	require.NoError(t, json.Unmarshal(raw, &parsed))
+
+	assert.Contains(t, parsed, "GeneratedAt")
+	assert.EqualValues(t, 10, parsed["Iterations"])
+
+	speedups, ok := parsed["Speedups"].([]any)
+	require.True(t, ok, "Speedups should be a JSON array")
+	require.Len(t, speedups, 1)
+	assert.EqualValues(t, 1.5, speedups[0])
+
+	before, ok := parsed["Before"].(map[string]any)
+	require.True(t, ok, "Before should be a JSON object")
+	beforeStats, ok := before["Stats"].([]any)
+	require.True(t, ok, "Before.Stats should be a JSON array")
+	require.Len(t, beforeStats, 1)
+	firstStat, ok := beforeStats[0].(map[string]any)
+	require.True(t, ok, "Before.Stats[0] should be a JSON object")
+	assert.Equal(t, "q1", firstStat["QueryName"])
+
+	diffs, ok := parsed["Diffs"].([]any)
+	require.True(t, ok, "Diffs should be a JSON array")
+	require.Len(t, diffs, 1)
+	firstDiff, ok := diffs[0].(map[string]any)
+	require.True(t, ok, "Diffs[0] should be a JSON object")
+	assert.Equal(t, "q1", firstDiff["QueryName"])
 }

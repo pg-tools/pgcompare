@@ -22,6 +22,7 @@ var Version = "dev"
 var (
 	flagConfig  string
 	flagOut     string
+	flagOutJSON string
 	flagVerbose bool
 )
 
@@ -51,6 +52,7 @@ var runCmd = &cobra.Command{
 func init() {
 	runCmd.Flags().StringVar(&flagConfig, "config", "", "path to pgcompare.yaml (required)")
 	runCmd.Flags().StringVar(&flagOut, "out", "", "output path for report.html (default: next to config)")
+	runCmd.Flags().StringVar(&flagOutJSON, "out-json", "", "output path for report.json (default: no JSON report)")
 	runCmd.Flags().BoolVarP(&flagVerbose, "verbose", "v", false, "verbose output")
 	_ = runCmd.MarkFlagRequired("config")
 	rootCmd.AddCommand(runCmd)
@@ -217,9 +219,18 @@ func runBenchmark(cmd *cobra.Command, _ []string) error {
 		p.Fail(err)
 		return fmt.Errorf("generate report: %w", err)
 	}
+	if flagOutJSON != "" {
+		if err := pgcompare.GenerateJSON(data, flagOutJSON); err != nil {
+			p.Fail(err)
+			return fmt.Errorf("generate json report: %w", err)
+		}
+	}
 	p.Done()
 
 	printSummary(data, outPath, time.Since(startAll))
 	fmt.Println(outPath)
+	if flagOutJSON != "" {
+		fmt.Println(flagOutJSON)
+	}
 	return nil
 }
