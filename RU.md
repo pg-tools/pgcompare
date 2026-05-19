@@ -353,6 +353,16 @@ pgcompare run --config ./pgcompare.yaml
 pgcompare run --config ./pgcompare.yaml --out ./artifacts/report.html
 ```
 
+Заодно сохранить машинно-читаемую JSON-копию того же отчёта:
+
+```bash
+pgcompare run --config ./pgcompare.yaml \
+  --out ./artifacts/report.html \
+  --out-json ./artifacts/report.json
+```
+
+Флаг `--out-json` не зависит от `--out`; без него JSON не пишется. В файл сериализуется структура `ReportData`; поля типа `time.Duration` (`Min`, `Max`, `P50`, `P95`, `P99`, `Mean`, `StdDev`, `ActualTotalTime`) кодируются как целые числа в наносекундах стандартным `encoding/json`. Пример рядом с HTML-отчётом: [`example/report.json`](./example/report.json) и [`example/report.html`](./example/report.html).
+
 Включить подробные логи:
 
 ```bash
@@ -381,4 +391,5 @@ pgcompare --version
 
 - Подключение к PostgreSQL сейчас строится через `localhost` на основе значений из `.env`
 - Если `--out` не указан, файл отчёта создаётся как `report.html` рядом с `pgcompare.yaml`
+- `--out-json` опционален; без него JSON не пишется. Если указан, файл создаётся рядом с HTML-отчётом, а его путь печатается последней строкой stdout (после пути к HTML)
 - Интерфейс HTML-отчёта сейчас на русском языке

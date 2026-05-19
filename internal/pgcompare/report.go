@@ -2,6 +2,7 @@ package pgcompare
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"os"
@@ -58,6 +59,19 @@ func Generate(data ReportData, outPath string) error {
 
 	if err := tmpl.Execute(f, templateData{ReportData: data}); err != nil {
 		return fmt.Errorf("render report: %w", err)
+	}
+
+	return nil
+}
+
+func GenerateJSON(data ReportData, outPath string) error {
+	buf, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return fmt.Errorf("marshal report json: %w", err)
+	}
+
+	if err := os.WriteFile(outPath, buf, 0o644); err != nil {
+		return fmt.Errorf("write report json: %w", err)
 	}
 
 	return nil

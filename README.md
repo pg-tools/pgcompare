@@ -352,6 +352,16 @@ Write the report to a custom path:
 pgcompare run --config ./pgcompare.yaml --out ./artifacts/report.html
 ```
 
+Also write a machine-readable JSON copy of the same report:
+
+```bash
+pgcompare run --config ./pgcompare.yaml \
+  --out ./artifacts/report.html \
+  --out-json ./artifacts/report.json
+```
+
+`--out-json` is independent of `--out` and produces no JSON when omitted. The JSON document is the `ReportData` struct directly; `time.Duration` fields (`Min`, `Max`, `P50`, `P95`, `P99`, `Mean`, `StdDev`, `ActualTotalTime`) are encoded as integer nanoseconds by Go's `encoding/json`. A worked example lives at [`example/report.json`](./example/report.json) (paired with [`example/report.html`](./example/report.html)).
+
 Enable verbose logs:
 
 ```bash
@@ -380,4 +390,5 @@ pgcompare --version
 
 - The CLI currently connects to PostgreSQL through `localhost`, using credentials from `.env`
 - If `--out` is omitted, the default output file is `report.html` in the config directory
+- `--out-json` is opt-in; without it no JSON file is written. When set, the file is written next to the HTML report and the path is printed as the last stdout line (after the HTML path)
 - The HTML report interface is currently in Russian

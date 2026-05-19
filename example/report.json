@@ -1,0 +1,349 @@
+{
+  "GeneratedAt": "2026-05-15T18:42:11Z",
+  "Iterations": 100,
+  "WarmupIterations": 5,
+  "Concurrency": 4,
+  "Repeats": 1,
+  "Speedups": [
+    4.27,
+    1,
+    6.36
+  ],
+  "Before": {
+    "Phase": "before",
+    "Stats": [
+      {
+        "QueryName": "top_rated_blocked_drivers",
+        "Min": 420000,
+        "Max": 1200000,
+        "P50": 560000,
+        "P95": 780000,
+        "P99": 950000,
+        "Mean": 580000,
+        "StdDev": 95000,
+        "QPS": 1724.1,
+        "ErrorRate": 0,
+        "Errors": null
+      },
+      {
+        "QueryName": "latest_ride_status",
+        "Min": 2900000,
+        "Max": 4099999,
+        "P50": 3300000,
+        "P95": 3800000,
+        "P99": 4000000,
+        "Mean": 3300000,
+        "StdDev": 180000,
+        "QPS": 303,
+        "ErrorRate": 0,
+        "Errors": null
+      },
+      {
+        "QueryName": "failed_payments_by_amount",
+        "Min": 1000000,
+        "Max": 2000000,
+        "P50": 1400000,
+        "P95": 1800000,
+        "P99": 1950000,
+        "Mean": 1400000,
+        "StdDev": 220000,
+        "QPS": 714.3,
+        "ErrorRate": 0,
+        "Errors": null
+      }
+    ],
+    "Plans": [
+      {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 294,
+        "ActualTotalTime": 613000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "drivers",
+            "IndexName": "",
+            "ActualRows": 294,
+            "ActualTotalTime": 136000,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10000,
+        "ActualTotalTime": 1183000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "ride_status_events",
+            "IndexName": "",
+            "ActualRows": 10000,
+            "ActualTotalTime": 476000,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 2000,
+        "ActualTotalTime": 1685000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "payments",
+            "IndexName": "",
+            "ActualRows": 2000,
+            "ActualTotalTime": 363000,
+            "Children": null
+          }
+        ]
+      }
+    ]
+  },
+  "After": {
+    "Phase": "after",
+    "Stats": [
+      {
+        "QueryName": "top_rated_blocked_drivers",
+        "Min": 110000,
+        "Max": 220000,
+        "P50": 136000,
+        "P95": 180000,
+        "P99": 210000,
+        "Mean": 140000,
+        "StdDev": 20000,
+        "QPS": 7352.9,
+        "ErrorRate": 0,
+        "Errors": null
+      },
+      {
+        "QueryName": "latest_ride_status",
+        "Min": 2900000,
+        "Max": 4099999,
+        "P50": 3300000,
+        "P95": 3800000,
+        "P99": 4000000,
+        "Mean": 3300000,
+        "StdDev": 180000,
+        "QPS": 303,
+        "ErrorRate": 0,
+        "Errors": null
+      },
+      {
+        "QueryName": "failed_payments_by_amount",
+        "Min": 160000,
+        "Max": 320000,
+        "P50": 214000,
+        "P95": 280000,
+        "P99": 310000,
+        "Mean": 220000,
+        "StdDev": 35000,
+        "QPS": 4672.9,
+        "ErrorRate": 0,
+        "Errors": null
+      }
+    ],
+    "Plans": [
+      {
+        "NodeType": "Nested Loop",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10,
+        "ActualTotalTime": 26000,
+        "Children": [
+          {
+            "NodeType": "Index Scan",
+            "RelationName": "drivers",
+            "IndexName": "idx_drivers_status_rating",
+            "ActualRows": 10,
+            "ActualTotalTime": 10000,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "NodeType": "Unique",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10000,
+        "ActualTotalTime": 1044999,
+        "Children": [
+          {
+            "NodeType": "Index Only Scan",
+            "RelationName": "ride_status_events",
+            "IndexName": "idx_ride_status_events_ride_created_id",
+            "ActualRows": 10000,
+            "ActualTotalTime": 434000,
+            "Children": null
+          }
+        ]
+      },
+      {
+        "NodeType": "Nested Loop",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 100,
+        "ActualTotalTime": 141000,
+        "Children": [
+          {
+            "NodeType": "Index Scan",
+            "RelationName": "payments",
+            "IndexName": "idx_payments_status_amount",
+            "ActualRows": 100,
+            "ActualTotalTime": 47000,
+            "Children": null
+          }
+        ]
+      }
+    ]
+  },
+  "Diffs": [
+    {
+      "QueryName": "top_rated_blocked_drivers",
+      "Before": {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 294,
+        "ActualTotalTime": 613000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "drivers",
+            "IndexName": "",
+            "ActualRows": 294,
+            "ActualTotalTime": 136000,
+            "Children": null
+          }
+        ]
+      },
+      "After": {
+        "NodeType": "Nested Loop",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10,
+        "ActualTotalTime": 26000,
+        "Children": [
+          {
+            "NodeType": "Index Scan",
+            "RelationName": "drivers",
+            "IndexName": "idx_drivers_status_rating",
+            "ActualRows": 10,
+            "ActualTotalTime": 10000,
+            "Children": null
+          }
+        ]
+      },
+      "Summary": [
+        "Sort -\u003e Nested Loop",
+        "Explicit Sort removed",
+        "Seq Scan -\u003e Index Scan on drivers",
+        "Index added: idx_drivers_status_rating"
+      ]
+    },
+    {
+      "QueryName": "latest_ride_status",
+      "Before": {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10000,
+        "ActualTotalTime": 1183000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "ride_status_events",
+            "IndexName": "",
+            "ActualRows": 10000,
+            "ActualTotalTime": 476000,
+            "Children": null
+          }
+        ]
+      },
+      "After": {
+        "NodeType": "Unique",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 10000,
+        "ActualTotalTime": 1044999,
+        "Children": [
+          {
+            "NodeType": "Index Only Scan",
+            "RelationName": "ride_status_events",
+            "IndexName": "idx_ride_status_events_ride_created_id",
+            "ActualRows": 10000,
+            "ActualTotalTime": 434000,
+            "Children": null
+          }
+        ]
+      },
+      "Summary": [
+        "Sort -\u003e Unique",
+        "Seq Scan -\u003e Index Only Scan on ride_status_events",
+        "Index added: idx_ride_status_events_ride_created_id"
+      ]
+    },
+    {
+      "QueryName": "failed_payments_by_amount",
+      "Before": {
+        "NodeType": "Sort",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 2000,
+        "ActualTotalTime": 1685000,
+        "Children": [
+          {
+            "NodeType": "Seq Scan",
+            "RelationName": "payments",
+            "IndexName": "",
+            "ActualRows": 2000,
+            "ActualTotalTime": 363000,
+            "Children": null
+          }
+        ]
+      },
+      "After": {
+        "NodeType": "Nested Loop",
+        "RelationName": "",
+        "IndexName": "",
+        "ActualRows": 100,
+        "ActualTotalTime": 141000,
+        "Children": [
+          {
+            "NodeType": "Index Scan",
+            "RelationName": "payments",
+            "IndexName": "idx_payments_status_amount",
+            "ActualRows": 100,
+            "ActualTotalTime": 47000,
+            "Children": null
+          }
+        ]
+      },
+      "Summary": [
+        "Sort -\u003e Nested Loop",
+        "Seq Scan -\u003e Index Scan on payments",
+        "Index added: idx_payments_status_amount"
+      ]
+    }
+  ],
+  "Description": [
+    {
+      "Query": "top_rated_blocked_drivers",
+      "What": "Replace a sequential scan with an index-backed lookup.",
+      "Changes": "CREATE INDEX idx_drivers_status_rating ON drivers (status, rating DESC) INCLUDE (user_id);",
+      "Expected": "Index Only Scan with LIMIT 10 short-circuit instead of Seq Scan + Sort over all blocked drivers."
+    },
+    {
+      "Query": "failed_payments_by_amount",
+      "What": "Add a covering index for status/amount filtering.",
+      "Changes": "CREATE INDEX idx_payments_status_amount ON payments (status, amount DESC) INCLUDE (payment_method_id);",
+      "Expected": "Index Only Scan with LIMIT 100 instead of Seq Scan + Filter + Sort."
+    }
+  ]
+}
